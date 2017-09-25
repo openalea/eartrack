@@ -1,0 +1,36 @@
+{
+    "cabin-1": {
+        "top":{
+            "mask_top_pot": "mask_topview_pot_1.png",
+            "mask_top_rails": "mask_topview_rails_1.png",
+            "background": "background_topview_1.png"
+        },
+        "side":{
+            "meanshift_threshold": 0.3,
+            "hsv_threshold_min": [30, 30, 0],
+            "hsv_threshold_max": [150, 254, 180],
+            "mask_mean_shift": "mask_sideview_mainarea_1.png",
+            "mask_hsv": "mask_sideview_stemarea_1.png",
+            "pot_height": 1920,
+            "pot_width": 1041
+        }
+    },
+    "cabin-2":{
+        "top":{
+            "mask_top_pot": "mask_topview_pot_2.png",
+            "mask_top_rails": "mask_topview_rails_2.png",
+            "background": "background_topview_2.png"
+        },
+        "side":{
+            "meanshift_threshold": 0.3,
+            "hsv_threshold_min": [30, 25, 0],
+            "hsv_threshold_max": [150, 254, 165],
+            "mask_mean_shift": "mask_sideview_mainarea_2.png",
+            "mask_hsv": "mask_sideview_stemarea_2.png",
+            "pot_height": 1917,
+            "pot_width": 1012
+        }
+    }
+}
+    
+    

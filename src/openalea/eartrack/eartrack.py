@@ -16,7 +16,7 @@ from skimage import graph
 
 # import matplotlib.pyplot as plt
 
-import openalea.eartrack.binarisation as st_bin
+import openalea.eartrack.binarisation as bin
 
 writing_semaphore = mp.BoundedSemaphore()
 
@@ -135,7 +135,7 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
     log += "Loading " + image_name + "\n"
     ''' LOADING BINARY AND ORIGINAL IMAGE '''
 
-    binary_img = st_bin.close(binary_img, iterations=4)
+    binary_img = bin.close(binary_img, iterations=4)
 
     name, ext = os.path.splitext(image_name)
 

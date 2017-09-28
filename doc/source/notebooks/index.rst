@@ -1,8 +1,6 @@
 Notebooks Tutorial
-==================
+------------------
 
-.. toctree::
-    :glob:
-    :caption: Notebook
+* `Ear Tracking tutorial`_
 
-    ./ear_tracking_tutorial.rst
+.. _Ear Tracking tutorial: http://nbviewer.jupyter.org/github/openalea/eartrack/blob/master/example/ear_tracking_tutorial.ipynb

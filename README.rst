@@ -1,4 +1,6 @@
-.. contents::
+.. image:: https://readthedocs.org/projects/eartrack/badge/?version=latest
+    :target: http://eartrack.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 ========
 EarTrack
@@ -6,9 +8,12 @@ EarTrack
 
 An imaging library to detect and track future position of ear on maize plants.
 
+.. contents::
+
 =============
 Documentation
 =============
+
 The documentation is available at `<https://eartrack.readthedocs.io>`_
 
 A `Tutorial <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/ear_tracking_tutorial.ipynb>`_ is available as a Jupyter Notebook.

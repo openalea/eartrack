@@ -18,6 +18,9 @@
 .coverage
 cover
 
+# Documentation
+_build
+
 # Packages
 *.egg
 *.egg-info

@@ -11,11 +11,17 @@ Installation
 
    ./source/install/index.rst
 
-.. Notebooks Tutorial
-.. ------------------
+Notebooks Tutorial
+------------------
 
-.. .. toctree:: :maxdepth: 2
-..    ./source/notebooks/index.rst
+* `Ear Tracking tutorial`_
+
+.. _Ear Tracking tutorial: http://nbviewer.jupyter.org/github/openalea/eartrack/blob/master/example/ear_tracking_tutorial.ipynb
+
+.. toctree::
+    :hidden:
+
+    ./source/notebooks/index.rst
 
 API References
 --------------

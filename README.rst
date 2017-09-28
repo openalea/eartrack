@@ -9,7 +9,7 @@ An imaging library to detect and track future position of ear on maize plants.
 =============
 Documentation
 =============
-The documentation is available at `<https://eartrack.readthedoc.org>`_
+The documentation is available at `<https://eartrack.readthedocs.io>`_
 
 A `Tutorial <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/ear_tracking_tutorial.ipynb>`_ is available as a Jupyter Notebook.
 

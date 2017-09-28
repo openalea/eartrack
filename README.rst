@@ -1,6 +1,6 @@
 .. image:: https://readthedocs.org/projects/eartrack/badge/?version=latest
-:target: http://eartrack.readthedocs.io/en/latest/?badge=latest
-:alt: Documentation Status
+    :target: http://eartrack.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 ========
 EarTrack

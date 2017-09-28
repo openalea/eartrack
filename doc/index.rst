@@ -11,11 +11,14 @@ Installation
 
    ./source/install/index.rst
 
-.. Notebooks Tutorial
-.. ------------------
+Notebooks Tutorial
+------------------
 
-.. .. toctree:: :maxdepth: 2
-..    ./source/notebooks/index.rst
+.. toctree::
+    :includehidden:
+    :maxdepth: 2
+
+    ./source/notebooks/index.rst
 
 API References
 --------------

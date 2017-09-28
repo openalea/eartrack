@@ -1,18 +1,3 @@
-.. contents::
-
-========
-EarTrack
-========
-
-An imaging library to detect and track future position of ear on maize plants.
-
-=============
-Documentation
-=============
-The documentation is available at `<https://eartrack.readthedoc.org>`_
-
-A `Tutorial <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/ear_tracking_tutorial.ipynb>`_ is available as a Jupyter Notebook.
-
 ===========================
 Installation with Miniconda
 ===========================
@@ -47,7 +32,7 @@ Dependencies install
 
 .. code:: shell
 
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme
+    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
 
 
 Eartrack install
@@ -82,7 +67,7 @@ Dependencies install
 
 .. code:: shell
 
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme
+    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
 
 
 Eartrack install
@@ -93,15 +78,3 @@ Eartrack install
     git clone https://github.com/openalea/eartrack.git
     cd eartrack
     python setup.py install --prefix=%CONDA_PREFIX%
-
-
-Authors
--------
-
-* Nicolas Brichet <brichet@supagro.inra.fr>
-
-License
--------
-
-**EarTrack** is released under a `Cecill-C <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html>`_ license.
-

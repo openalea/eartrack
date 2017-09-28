@@ -27,6 +27,7 @@ requirements:
     - openalea.deploy
     - openalea.core
     - numpy
+    - scipy
     - matplotlib
     - opencv
     - scikit-image

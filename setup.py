@@ -61,7 +61,9 @@ setup(
 
     # Eventually include data in your package
     # (flowing is to include all versioned files other than .py)
-    include_package_data = True,
+    include_package_data= True,
+    share_dirs = { 'share' : 'share'},
+
     # (you can provide an exclusion dictionary named exclude_package_data to remove parasites).
     # alternatively to global inclusion, list the file to include
     #package_data = {'' : ['*.pyd', '*.so'],},

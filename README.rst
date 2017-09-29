@@ -52,7 +52,7 @@ Dependencies install
 
 .. code:: shell
 
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme
+    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
 
 
 Eartrack install
@@ -80,14 +80,14 @@ Dependencies install
 
 .. code:: shell
 
-    conda install -c conda-forge numpy matplotlib scikit-image opencv
+    conda install -c conda-forge numpy matplotlib scikit-image opencv pywin32
     conda install -c openalea openalea.deploy openalea.core
 
 (Optional) Package managing tools :
 
 .. code:: shell
 
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme
+    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
 
 
 Eartrack install

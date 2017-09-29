@@ -1,17 +1,20 @@
-os:
-  - linux
-  - osx
+matrix:
+  include:
+    - language: generic
+      os: osx
+      before_install:
+        - brew update
+
+    - language: generic
+      os: linux
+      before_install:
+        - sudo apt-get update
+
 
 env:
   - PYTHON_VERSION="2.7
 
 before_install:
-
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew update;
-    else
-      sudo apt-get update;
-    fi
 
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
@@ -29,7 +32,7 @@ before_install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
+  - conda create -q -n test-environment python=$PYTHON_VERSION
   - source activate test-environment
   - conda install -c conda-forge numpy matplotlib opencv scikit-image
   - conda install -c openalea openalea.deploy openalea.core

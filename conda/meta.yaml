@@ -45,7 +45,8 @@ test:
 about:
   home: http://eartrack.readthedocs.org
   license: Cecill-C
-  summary: ' An imaging library to detect and track future position of ears on maize plants.'
+  license_file: LICENSE.txt
+  summary: An imaging library to detect and track future position of ears on maize plants.
 
 extra:
   recipe-maintainers:

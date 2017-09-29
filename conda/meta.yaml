@@ -1,0 +1,54 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: openalea.eartrack
+  version: {{ version }}
+
+source:
+  path: ..
+  #git_url: https://github.com/openalea/eartrack
+  #git_rev: v1.0.0
+
+build:
+  number: 0
+  preserve_egg_dir: True
+  entry_points:
+    - eartrack = openalea.eartrack.main:main
+  script: python setup.py install
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - openalea.deploy
+
+  run:
+    - python
+    - openalea.deploy
+    - openalea.core
+    - numpy
+    - scipy
+    - matplotlib
+    - opencv
+    - scikit-image
+
+test:
+  imports:
+    - openalea.eartrack
+    - openalea.eartrack.eartrack
+    - openalea.eartrack.binarisation
+    - openalea.eartrack.binarisation_folder
+
+#  commands:
+#    - eartrack --help
+
+about:
+  home: http://eartrack.readthedocs.org
+  license: Cecill-C
+  summary: ' An imaging library to detect and track future position of ears on maize plants.'
+
+extra:
+  recipe-maintainers:
+    - pradal
+    - brichet
+    - artzet

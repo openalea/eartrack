@@ -50,8 +50,8 @@ setup(
     package_dir= package_dir,
 
     # Namespace packages creation by deploy
-    #namespace_packages = [namespace],
-    #create_namespaces = False,
+    namespace_packages = [namespace],
+    create_namespaces = False,
     zip_safe= False,
 
     # Dependencies
@@ -61,7 +61,9 @@ setup(
 
     # Eventually include data in your package
     # (flowing is to include all versioned files other than .py)
-    include_package_data = True,
+    include_package_data= True,
+    share_dirs = { 'share' : 'share'},
+
     # (you can provide an exclusion dictionary named exclude_package_data to remove parasites).
     # alternatively to global inclusion, list the file to include
     #package_data = {'' : ['*.pyd', '*.so'],},
@@ -71,12 +73,7 @@ setup(
     # Declare scripts and wralea as entry_points (extensions) of your package
     entry_points = {
         'wralea' : ['eartrack = openalea.eartrack_wralea'],
-        #'console_scripts': [
-        #       'fake_script = openalea.fakepackage.amodule:console_script', ],
-        # 'gui_scripts': [
-        #      'fake_gui = openalea.fakepackage.amodule:gui_script',],
-        #	'wralea': wralea_entry_points
-        },
-    )
-
-
+        'console_scripts': [
+               'eartrack = openalea.eartrack.main:main', ],
+    },
+)

@@ -1,0 +1,49 @@
+matrix:
+  include:
+    - language: generic
+      os: osx
+      env: PYTHON_VERSION="2.7"
+      before_install:
+        - brew update
+        - if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+            wget https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh -O miniconda.sh;
+          else
+            wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+          fi
+
+    - language: generic
+      os: linux
+      env: PYTHON_VERSION="2.7"
+      before_install:
+        - sudo apt-get update
+        - if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+            wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+          else
+            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+          fi
+
+
+install:
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+  - conda create -q -n test-environment python=$PYTHON_VERSION
+  - source activate test-environment
+  # Install dependencies
+  - conda install -c conda-forge numpy matplotlib opencv scikit-image
+  - conda install -c openalea openalea.deploy openalea.core
+  # Install current package (no need --prefix=$CONDA_PREFIX with openalea.deploy)
+  - python setup.py install
+
+before_script:
+
+  - conda install -c conda-forge nose
+
+script:
+  - nosetests

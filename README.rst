@@ -2,11 +2,17 @@
     :target: http://eartrack.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://travis-ci.org/artzet-s/eartrack.svg?branch=master
+    :target: https://travis-ci.org/artzet-s/eartrack
+
 ========
 EarTrack
 ========
 
 An imaging library to detect and track future position of ear on maize plants.
+
+**EarTrack** is released under a `Cecill-C <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html>`_ license.
+
 
 .. contents::
 
@@ -45,14 +51,14 @@ Dependencies install
 
 .. code:: shell
 
-    conda install  -c conda-forge numpy matplotlib opencv scikit-image
+    conda install -c conda-forge numpy matplotlib opencv scikit-image
     conda install -c openalea openalea.deploy openalea.core
 
 (Optional) Package managing tools :
 
 .. code:: shell
 
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme
+    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
 
 
 Eartrack install
@@ -80,14 +86,14 @@ Dependencies install
 
 .. code:: shell
 
-    conda install -c conda-forge numpy matplotlib scikit-image opencv
+    conda install -c conda-forge numpy matplotlib scikit-image opencv pywin32
     conda install -c openalea openalea.deploy openalea.core
 
 (Optional) Package managing tools :
 
 .. code:: shell
 
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme
+    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
 
 
 Eartrack install
@@ -104,9 +110,3 @@ Authors
 -------
 
 * Nicolas Brichet <brichet@supagro.inra.fr>
-
-License
--------
-
-**EarTrack** is released under a `Cecill-C <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html>`_ license.
-

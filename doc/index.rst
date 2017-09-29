@@ -3,6 +3,10 @@ Eartrack's documentation
 
 An imaging library to detect and track future position of ear on maize plants.
 
+**earTrack** is released under a `Cecill-C <http://www.cecill
+.info/licences/Licence_CeCILL-C_V1-en.html>`_ license.
+
+
 Installation
 ------------
 
@@ -48,12 +52,6 @@ License
     :hidden:
 
     ./source/license.rst
-
-**Phenomenal** is released under a Cecill-C license.
-
-.. note:: `Cecill-C <http://www.cecill.info/licences/
-    Licence_CeCILL-C_V1-en.html>`_ license is a LGPL compatible license.
-
 
 Indices and tables
 ==================

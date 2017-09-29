@@ -39,8 +39,8 @@ test:
     - openalea.eartrack.binarisation
     - openalea.eartrack.binarisation_folder
 
-#  commands:
-#    - eartrack --help
+  commands:
+    - eartrack --help
 
 about:
   home: http://eartrack.readthedocs.org

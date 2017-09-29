@@ -43,7 +43,7 @@ Authors
 
     ./source/authors.rst
 
-.. include:: ../AUTHORS.rst
+* Nicolas Brichet <brichet@supagro.inra.fr>
 
 License
 -------

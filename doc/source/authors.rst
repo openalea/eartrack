@@ -1,4 +1,4 @@
 Authors
 -------
 
-.. include:: ../../AUTHORS.rst
+* Nicolas Brichet <brichet@supagro.inra.fr>

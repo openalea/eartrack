@@ -35,7 +35,13 @@ environment:
 # PR. The following option cancels pending jobs in a given PR after the first
 # job failure in that specific PR.
 matrix:
-    fast_finish: true
+  exclude:
+    - platform: x86
+      PYTHON: "C:\\Miniconda2-x64"
+      PYTHON_VERSION: "2.7"
+      PYTHON_ARCH: "64"
+
+  fast_finish: true
 
 
 install:

@@ -2,6 +2,9 @@
 # Windows
 # https://ci.appveyor.com/project/artzet-s/eartrack
 
+platform:
+  - x86
+  - x64
 
 environment:
   global:
@@ -21,13 +24,11 @@ environment:
     - PYTHON: "C:\\Miniconda2-x86"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
-      platform: x86
 
 
     - PYTHON: "C:\\Miniconda2-x64"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "64"
-      platform: x86
 
 # Because we only have a single worker, we don't want to waste precious
 # appveyor CI time and make other PRs wait for repeated failures in a failing

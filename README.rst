@@ -11,6 +11,9 @@ EarTrack
 
 An imaging library to detect and track future position of ear on maize plants.
 
+**EarTrack** is released under a `Cecill-C <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html>`_ license.
+
+
 .. contents::
 
 =============
@@ -107,9 +110,3 @@ Authors
 -------
 
 * Nicolas Brichet <brichet@supagro.inra.fr>
-
-License
--------
-
-**EarTrack** is released under a `Cecill-C <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html>`_ license.
-

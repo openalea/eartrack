@@ -12,8 +12,8 @@ source:
 build:
   number: 0
   preserve_egg_dir: True
-  # entry_points:
-  #  - eartrack = openalea.eartrack.main:main
+  entry_points:
+    - eartrack = openalea.eartrack.main:main
   script: python setup.py install
 
 requirements:

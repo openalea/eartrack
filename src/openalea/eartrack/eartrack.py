@@ -139,31 +139,29 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
 
     name, ext = os.path.splitext(image_name)
 
-    ''' Getting the biggest region '''
+    # Get the biggest region
     biggest_binary_region = binary_biggest_region(binary_img)
 
-    ''' Extracting skeleton '''
+    # Extract skeleton of plant
     skeleton_img = get_skeleton(biggest_binary_region)
 
-    ''' Extracting distance transform '''
+    # Extract distance transform
     dist_trans_img = distance_transform(biggest_binary_region)
 
-    ''' skimage's graph library and skeleton cleaning '''
+    # skimage's graph library and skeleton cleaning
     begin, end = get_endpoints(skeleton_img, pot_center, pot_height)
     if begin == [-1, -1]:
-        # debugFile.write("Probleme sur la determination du pixel bas de
-        # la tige\n\n")
         log += "Error in bottom's stem detection\n\n"
         return positions, useful_images, log
     skeleton_img = skeleton_cleaning(skeleton_img, begin)
     route = find_cross_route(skeleton_img, begin)
     route.reverse()
 
-    ''' Making color image (imTest) with distance transform '''
+    # Make color image with distance transform '''
     norm_dt_img = dist_trans_img*255/dist_trans_img.max()
     norm_dt_img = norm_dt_img.astype(int)
 
-    ''' Making image bin and skeletons '''
+    # Make image binary and skeletons
     output_img = np.zeros(color_img.shape, 'uint8')
     output_img[:, :, 0] = biggest_binary_region
     output_img[:, :, 1] = biggest_binary_region
@@ -171,22 +169,21 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
     for pix in route:
         output_img[pix[0], pix[1]-2:pix[1]+2, :] = (0, 0, 255)
 
-    ''' Getting main direction of stem, rotate the stem and adapt on it the
-    following derivate algorithme'''
-    ''' NE SEMBLE PAS ADAPTE, NE FONCTIONNE PLUS POUR LES TIGES DROITES!!!'''
+    # Get main direction of stem, rotate the stem and adapt on it the
+    # following derivation algorithme
     init_stem = np.zeros(biggest_binary_region.shape, 'uint8')
     for pix in route:
         mask = dist_trans_img[pix[0], pix[1]]
         init_stem[pix[0]-mask:pix[0]+mask+1, pix[1]-mask:pix[1]+mask+1] = 255
     result_img, a, b, r_xy, alpha = majors_axes_regression_line(init_stem)
 
-    ''' Derivate route '''
+    # Perform derivation on route to
     diff, x, y = derivate(route)
 
-    ''' Eliminate noise on derivate'''
+    # Eliminate noise on derivation curve
     indices = differential_cleaning(diff, x, y, 10, 5, 5)
 
-    ''' Deleting extremum error '''
+    # Delete extrema error
     i = len(indices)-1
     while indices[i][2] == 0:
         i -= 1
@@ -206,7 +203,7 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
             route = route[indices[0][1]:]
             indices.pop(0)
 
-    ''' Stem reconstruction '''
+    # Stem reconstruction
     cleaned_stem = np.zeros(biggest_binary_region.shape, 'uint8')
     for pix in route:
         mask = dist_trans_img[pix[0], pix[1]]
@@ -218,10 +215,8 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
 
     if r_xy > 30:
         log += "Stem detection error\n\n"
-        writing_semaphore.acquire()
         cv2.imwrite(os.path.join(output_folder, name + "_stem_error" + ext),
                     result_img)
-        writing_semaphore.release()
         return positions, useful_images, log
 
     skeleton_stem = np.zeros(binary_img.shape, 'uint8')
@@ -233,34 +228,7 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
         return positions, useful_images, log
     route = find_route(skeleton_stem, begin, end)
 
-    ''' plot derivate '''
-    # plt.clf()
-    # plt.plot(x,y-round(np.mean(y)),'r')
-    # plt.plot(x,y,'r')
-    # plt.plot(x,diff*(y.max()-y.min())/(diff.max()- diff.min()),'b')
-    # for ind in ni:
-    #     plt.plot(x[ind[0]],y[ind[0]]-round(np.mean(y)),'r*')
-    #     plt.plot(x[ind[1]],y[ind[1]]-round(np.mean(y)),'g*')
-    #     plt.plot(x[ind[0]],y[ind[0]],'r*')
-    #     plt.plot(x[ind[1]],y[ind[1]],'g*')
-    # for ind in indices:
-    #     plt.plot(x[ind[0]],y[ind[0]]-round(np.mean(y)) + 20,'r*')
-    #     plt.plot(x[ind[1]],y[ind[1]]-round(np.mean(y)) + 20,'g*')
-    # x1 = x[0]
-    # x2 = x[len(x)-1]
-    # y1 = a*x1 + b
-    # y2 = a*x2 + b
-    # plt.plot([x1,x2], [y1-round(np.mean(y)),y2-round(np.mean(y))])
-    # j = 0
-    # for i in range(len(means)):
-    #     if abs(means[i]-a) >0.15:
-    #         j+=1
-    #         plt.plot(x[ni[i][0]],y[ni[i][0]]-round(np.mean(y)),'r*')
-    #         plt.plot(x[ni[i][1]],y[ni[i][1]]-round(np.mean(y)),'g*')
-    # plt.axis('equal')
-    # plt.show(block=False)
-
-    ''' Statistics on distances curve '''
+    # Statistics on distances curve to detect probable ear position
     distances = get_distances(route, dist_trans_img)
     distances_length = float(len(distances))
 
@@ -269,8 +237,8 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
     position = 0
 
     solutions, stems, pics, poses = ear_detection(distances)
-    minus_pos = poses[1]
-    stem_pos_after_ear = poses[2]
+    minus_pos = poses[0]
+    stem_pos_after_ear = poses[1]
 
     kept_solutions = -1
     for i in range(len(solutions)):
@@ -285,6 +253,7 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
             elif solutions[i][1] > solutions[kept_solutions][1]:
                 kept_solutions = i
                 position = solutions[i][0]
+
     log += "Stem width bellow the ear = " + str(distances[minus_pos]) + "\n"
     if kept_solutions >= 0:
         log += "Stem with up to the ear = " + \
@@ -354,62 +323,28 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
     output_img[route[minus_pos][0]-5:route[minus_pos][0]+5,
                route[minus_pos][1]-5:route[minus_pos][1]+5, :] = (255, 0, 0)
 
-    writing_semaphore.acquire()
-    try:
-        cv2.imwrite(os.path.join(output_folder, name + "_DT" + ext),
-                    norm_dt_img)
+    # save images
+    cv2.imwrite(os.path.join(output_folder, name + "_DT" + ext),
+                norm_dt_img)
 
-        cv2.imwrite(os.path.join(output_folder, name + "_mini" + ext),
-                    colored_image)
+    cv2.imwrite(os.path.join(output_folder, name + "_mini" + ext),
+                colored_image)
 
-        cv2.imwrite(os.path.join(output_folder, name + "_Bin" + ext),
-                    output_img)
+    cv2.imwrite(os.path.join(output_folder, name + "_Bin" + ext),
+                output_img)
 
-        cv2.imwrite(os.path.join(output_folder, name + "_tigeCleaned" + ext),
-                    result_img)
+    cv2.imwrite(os.path.join(output_folder, name + "_tigeCleaned" + ext),
+                result_img)
 
-        skeleton_img = skeleton_img*255
+    skeleton_img *= 255
 
-        cv2.imwrite(os.path.join(output_folder, name + "_skel" + ext),
-                    skeleton_img*255)
-    finally:
-        writing_semaphore.release()
+    cv2.imwrite(os.path.join(output_folder, name + "_skel" + ext),
+                skeleton_img)
 
-    ''' Log distance values '''
+    # Log distance values
     log += image_name + ";" + ';'.join(map(str, distances)) + "\n"
     log += "\n"
-    # print positions
-    # print useful_images
     return positions, useful_images, log
-
-
-def pixels_to_mm(positions, cabin, x=2000):
-    """ This function convert selected pixel into camera position. Parameters
-    depend on platform and calibration
-
-    :param positions: (list of int) containing [u, v, angle] image position
-    to convert into millimeters (y and z) corresponding to camera position
-    :param cabin: (int) cabin number, 5 or 6
-    :param x: (int) position of mobile camera in depth (x). This position
-    cannot be calculated for now, it has to be fixed by user
-    :return: (list of int) containing desired x, y and z camera position, and
-    desired plant angle
-    """
-    if positions is None or cabin not in [5, 6]:
-        return [0, 0, 0, -1]
-    else:
-        y, z = 0, 0
-        if cabin == 5:
-            y = int(round((float(positions[1]) -
-                           float(1024))*float(5530)/float(5454) + float(500)))
-            z = int(round((float(1224) - float(positions[0])) *
-                          float(5530)/float(5450) + float(850)))
-        elif cabin == 6:
-            y = int(round((float(positions[1]) - float(1024)) *
-                          float(5546)/float(5467) + float(530)))
-            z = int(round((float(1224) - float(positions[0])) *
-                          float(5546)/float(5461) + float(810)))
-        return [x, y, z, positions[2]]
 
 
 def get_skeleton(binary_image):
@@ -447,12 +382,8 @@ def binary_biggest_region(binary_image):
     biggest = 0
     lab = 0
 
-    # TODO skimage version
     labelled_img = measure.label(binary_image, neighbors=8)
     for region in measure.regionprops(labelled_img):
-    # labelled_img = label(binary_image, neighbors=8)
-    # for region in measure.regionprops(labelled_img,
-    #                                   properties=['area', 'label', 'coords']):
         if region['area'] > biggest and \
                 binary_image[region['coords'][0][0], region['coords'][0][1]]:
             biggest = region['area']
@@ -500,13 +431,13 @@ def get_endpoints(skeleton, center, height):
     return down_node, up_node
 
 
-# TODO utilite de cette fonction
 def skeleton_cleaning(skeleton, begin):
     """ Clean the skeleton
 
-    :param skeleton:
-    :param begin:
-    :return:
+    :param skeleton: (numpy 2D array of binary uint8) representing the skeleton
+    of side view image of maize plant
+    :param begin: bottm of stem
+    :return: (numpy 2D array of binary uint8) representing cleaned skeleton
     """
     cleaned_skeleton = np.array(skeleton)
     skeleton_inverted = np.array(skeleton, 'float')
@@ -622,18 +553,11 @@ def derivate(route):
     x = np.zeros([1, 0], 'int')
     y = np.zeros([1, 0], 'int')
     diff = np.zeros([1, 0], 'float')
-    infinite_index = 1
     i = 0
-    # xy = 0
-    # diffNb = 0
     while i < longueur-1:
         superior_index = 1
         x = np.append(x, route[i][0])
         y = np.append(y, route[i][1])
-        # xy += 1
-        # print route[i+superior_index][0]
-        # print route[i][0]
-        # print route[i-infinite_index][0]
         while route[i+superior_index][0] >= route[i][0]:
             x = np.append(x, route[i+superior_index][0])
             y = np.append(y, route[i+superior_index][1])
@@ -659,14 +583,10 @@ def derivate(route):
                                                    route[i][1]) /
                                              float(route[i+superior_index][0] -
                                                    route[i][0]))*np.Inf)
-            # infinite_index = superior_index
-            # diffNb += 1
         else:
             diff = np.append(diff, 1.)
         i += superior_index
 
-        # print diff[i-1]
-        # print str(xy) + "   " + str(diffNb)
     if not route[longueur-1][0] == route[longueur-2][0]:
         x = np.append(x, route[longueur-1][0])
         y = np.append(y, route[longueur-1][1])
@@ -715,7 +635,6 @@ def differential_cleaning(diff, x, y, max_space, min_length, min_height):
                 end = i
         else:
             if end > -1:
-                # print str(x[i] - x[end])
                 if abs(x[i] - x[end]) > max_space or i == len(diff)-1:
                     indices.append(list([begin, end+1, direction]))
                     begin = -1
@@ -737,14 +656,16 @@ def differential_cleaning(diff, x, y, max_space, min_length, min_height):
             good_index.append(i)
             end = i[1]
 
-    # Ecriture d'une zone qui aurait été annulée pour petite taille
+    # Write small plane zone which should have been eliminate beacause of its
+    # small length
     if end < indices[len(indices)-1][1]:
         if len(good_index) > 0 and good_index[len(good_index)-1][2] == 0:
             good_index[len(good_index)-1][1] = indices[len(indices)-1][1]
         else:
             good_index.append(list([end, indices[len(indices)-1][0], 0]))
         end = indices[len(indices)-1][1]
-    # Ecriture de la dernière zone plane le cas échéant
+
+    # Write last plane zone if exists
     if indices[len(indices)-1][1] < len(diff)-1:
         if len(good_index) > 0 and good_index[len(good_index)-1][2] == 0:
             good_index[len(good_index)-1][1] = len(diff)-1
@@ -754,7 +675,7 @@ def differential_cleaning(diff, x, y, max_space, min_length, min_height):
     return good_index
 
 
-def differential_separate(diff, x, y, indices):
+def differential_separate(x, y, indices):
     ''' Go deeper in derivates datas analyse to find different fast of
     increase and decrease in order to detect increases and decreases even
     on inclined stem '''
@@ -764,17 +685,13 @@ def differential_separate(diff, x, y, indices):
         direction = ind[2]
         if not direction == 0:
             tab = list([list(ind)])
-            # print tab[0][1] - tab[0][0]
             while tab[0][1] - tab[0][0] > 10:
                 temp = list(tab)
                 tab = list()
-                # print temp
                 for elem in temp:
                     longueur = int(round((elem[1] - elem[0])/2))
                     tab.append(list([elem[0], elem[0]+longueur, direction]))
                     tab.append(list([elem[0]+longueur, elem[1], direction]))
-                # break
-                # print tab
             means = list()
             for elem in tab:
                 if x[elem[1]] - x[elem[0]] > 0:
@@ -788,10 +705,6 @@ def differential_separate(diff, x, y, indices):
                 i = 0
                 while 1:
                     if i+1 < len(means):
-                        # print i
-                        # print abs(means[i] - means[i+1])
-                        # print means[i]
-                        # if abs(means[i]) == np.inf:
                         if abs(means[i]) == np.inf \
                                 or abs(means[i] - means[i+1]) < 0.2:
                             tab[i][1] = tab[i+1][1]
@@ -830,26 +743,9 @@ def differential_separate(diff, x, y, indices):
                             i += 1
                     else:
                         break
-            # moy = float(y[ind[1]] - y[ind[0]])/float(x[ind[1]] - x[ind[0]])
-            # print '\n'
-            # print tab
-            # print ind
-            # print means
-            # print'\n\n'
-            # print moy
             for i in range(len(tab)):
                 new_index.append(tab[i])
                 total_means.append(means[i])
-            # break
-            # print str(moy) + "   " + str(ind[2]) + "   " + str(ind) + "    " + str(ind[1] - ind[0])
-            # signe = np.sign(ind[1]-ind[0])
-            # for i in range(ind[0],ind[1],signe):
-            #     if not x[i+1] - x[i] == 0:
-            #         print "\t" + str(float(y[i+signe] - y[i])/float(x[i+signe] - x[i])) + "\t" + str(x[i]) + "\t" + str(y[i])
-            #     else:
-            #         print "\t" + str(np.sign(float(y[i+signe] - y[i])) * np.Inf) + "\t" + str(x[i]) + "\t" + str(y[i])
-
-        # MODIF 14/08/2014 pour supprimer petites parties planes
         else:
             if ind[1] - ind[0] < 4 and len(new_index):
                 new_index[len(new_index) - 1][1] = ind[1]
@@ -942,7 +838,6 @@ def robust_majors_axes_regression_ww(pixels):
 
     loop_again = 1
     while loop_again:
-        # temps = time.time()
         mean_values = np.mean(values, 0)
 
         s_xy = ((values[:, 0]-mean_values[0]) *
@@ -966,8 +861,6 @@ def robust_majors_axes_regression_ww(pixels):
         s = (u72 - u28)/1.654
 
         loop_again = 0
-        # print "inter : " + str(time.time() - temps)
-        # temps = time.time()
         pixels_to_delete = np.where(errors > 4*s)[0]
         if pixels_to_delete.shape[0]:
             useless_pixels = np.append(useless_pixels,
@@ -975,8 +868,6 @@ def robust_majors_axes_regression_ww(pixels):
                                        axis=0)
             useful_pixels = np.delete(useful_pixels, pixels_to_delete, axis=0)
             loop_again = 1
-        # print "boucle : " + str(time.time() - temps)
-        # print "\n"
         values = np.array(useful_pixels)
         n = values.shape[0]
 
@@ -1015,7 +906,6 @@ def get_view_angles(binary_img, mask):
                  (int(b+a*pixels[0][n-1]), pixels[0][n-1]+1), (0, 0, 255), 3)
         cv2.line(result, (int(b+a*pixels[0][0]), pixels[0][0]-2),
                  (int(b+a*pixels[0][n-1]), pixels[0][n-1]-1), (0, 0, 255), 3)
-        # print "alpha = " + str(alpha)
 
         loop_again = 1
         while loop_again:
@@ -1023,13 +913,8 @@ def get_view_angles(binary_img, mask):
             temp_img = np.zeros(binary_img.shape, 'uint8')
             temp_img[useless_pixels[:, 0], useless_pixels[:, 1]] = 255
             useless_pixels = np.empty([0, 2], 'int')
-            # TODO skimage version
             labelled_img = measure.label(temp_img, neighbors=8)
             for region in measure.regionprops(labelled_img):
-            # labelled_img = label(temp_img, neighbors=8)
-            # for region in measure.regionprops(labelled_img,
-            #                                   properties=['area', 'label',
-            #                                               'coords']):
                 pixels2 = np.where(labelled_img == region['label'])
                 temp_useful_pixels = \
                     np.transpose(np.array([pixels2[0], pixels2[1]]))
@@ -1040,13 +925,11 @@ def get_view_angles(binary_img, mask):
 
                     alpha2 = (m.atan2(a2/m.sqrt(m.pow(a2, 2) + 1),
                                       1/m.sqrt(m.pow(a2, 2) + 1)))*180/m.pi
-                    # print alpha2
                     errors = np.array(abs(useful_pixels2[:, 1] -
                                            a * useful_pixels2[:, 0] - b))
                     x_intersection_line = int((b - b2)/(a2 - a))
                     y_intersection_line = int(a*x_intersection_line + b)
                     useless_pixels = np.append(useless_pixels, useless_pixels2, axis=0)
-                    # print "erreur max = " + str(errors.max())
 
                     if 0 <= x_intersection_line < mask.shape[0] and \
                                     0 <= y_intersection_line < mask.shape[1]:
@@ -1055,12 +938,10 @@ def get_view_angles(binary_img, mask):
                             max_error_pos = np.where(errors == errors.max())[0][0]
                             max_signed_error = useful_pixels2[max_error_pos,1] - a * useful_pixels2[max_error_pos,0] - b
                             diff = alpha - alpha2
-                            # print "diff = " + str(diff)
                             if diff*max_signed_error < 0:
                                 alpha2 = (alpha2 + 180) % 360
                             else:
                                 alpha2 %= 360
-                            # print "alpha2 recalcule = " + str(alpha2)
                             exclusions.append(alpha2)
                             result[useful_pixels2[:, 0],
                                    useful_pixels2[:, 1], :] = (0, 255, 0)
@@ -1087,10 +968,6 @@ def get_view_angles(binary_img, mask):
                     result[temp_useful_pixels[:, 0],
                            temp_useful_pixels[:, 1], :] = (0, 0, 255)
 
-        # cv2.putText(result, "M = " + str(moyenneD), (0,500),
-        #             cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0))
-        cv2.putText(result, "vue = " + str(alpha90), (0, 1000),
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0))
         return result[::-1, ::-1], alpha90, alpha270, exclusions
     else:
         return result, -1, -1, exclusions
@@ -1132,8 +1009,6 @@ def robust_mean(values, images, std_error=20):
                 values_to_delete = np.where(errors == errors.max())[0]
                 values = np.delete(values, values_to_delete, 0)
                 images = np.delete(images, values_to_delete, 0)
-                # for i in range(len(values_to_delete)-1, -1, -1):
-                    # images.pop(values_to_delete[i])
                 if values.shape[0] <= 1:
                     means = np.array([-1, -1])
                     loop_again = 0
@@ -1144,54 +1019,31 @@ def robust_mean(values, images, std_error=20):
 
 
 def ear_detection(distances):
+    """
+
+    :param distances: (list of int) representing distance transform values all
+    along the stem
+    :return: (list of list of 2 int) first value of each 2 int list is a
+             probable solution, second value is its weight
+            (list of (list of (2 int and one list))) representing parts of
+            distances interpreted as stem (begin, end, [values])
+            (list of (list of (2 int and one list))) representing parts of
+            distances interpreted as leaves (begin, end, [values])
+            (list of 2 int), width of stem under ear and upper ear
+    """
     distances_length = float(len(distances))
-
-    ''' Recuperation de la valeur minimale representative de la 1ere moitie
-    des distances '''
-    # part_1 = int(round(len(distances)/2))
-    # td = distances[:part_1]
-    #
-    # mini = 0
-    # tdTemp = list(td)
-    # while not mini and len(tdTemp):
-    #     mini = min(tdTemp)
-    #     if float(td.count(mini))/float(len(td)) < 0.1:
-    #         while tdTemp.count(mini):
-    #             tdTemp.remove(mini)
-    #         mini = 0
-    # if mini>0:
-    #     pos_min = td.index(mini)
-    # else:
-    #     pos_min = 0
-
     part_1 = int(round(len(distances)/2.5))
     td = distances[:part_1]
     td.sort()
     mini = td[int(round(len(td)*15/100))]
     pos_min = np.where(td == mini)[0][0]
-    # mini = 0
-    # tdTemp = np.array(td)
-    # while not mini and len(tdTemp):
-    #     mini = tdTemp.min()
-    #     if float(len(np.where(td == mini)[0]))/float(len(td)) < 0.1:
-    #         while tdTemp.count(mini):
-    #             tdTemp.remove(mini)
-    #         tdTemp = tdTemp[np.invert(tdTemp == mini)]
-    #         print float(len(td[td<=mini]))/float(len(td))
-    #         mini = 0
-    # if mini>0:
-    #     pos_min = np.where(td == mini)[0][0]
-    #     print float(len(td[td<=mini]))/float(len(td))
-    # else:
-    #     pos_min = 0
 
-    ''' recherche de peaks '''
+    # Look for peaks
     dist_array = np.array(distances)
     sorted_distances = list(distances)
     sorted_distances.sort()
 
     median = sorted_distances[int(round(part_1))]
-    # print "Median : " + str(median)
     peak_begin = 0
     peaks = np.empty([0, 3], 'int')
     i = 1
@@ -1199,21 +1051,15 @@ def ear_detection(distances):
         if distances[i] > median:
             if not peak_begin:
                 peak_begin = i
-        # if distances[i] > mini:
-            # posPic[1] += 1
             if distances[i] > distances[i+1] and distances[i] > distances[i-1]:
                 peaks = np.append(peaks, [[i, peak_begin, i]], axis=0)
             elif distances[i] > distances[i-1] and \
                             distances[i] == distances[i+1]:
-                # picsTemp = list()
                 while distances[i] == distances[i+1]:
-                    # longPic += 1
-                    # picsTemp.append(i)
                     i += 1
                     if i >= len(distances)-1:
                         break
                 if (i >= len(distances)-1) or (distances[i] > distances[i+1]):
-                    # for val in picsTemp:
                     peaks = np.append(peaks, [[i, peak_begin, i]], axis=0)
         elif peak_begin:
             if peaks.shape[0]:
@@ -1223,12 +1069,9 @@ def ear_detection(distances):
         i += 1
     if (i < len(distances)) and (distances[i] > distances[i-1] and
                                          distances[i] > median):
-    # if distances[i] > distances[i-1] and distances[i] > mini:
         peaks = np.append(peaks, [[i, peak_begin, i]], axis=0)
-    # print peaks
 
     i = 0
-    debut = np.where(peaks[:,0] >= part_1)[0][0]
     while i < peaks.shape[0]-1:
         if (dist_array[peaks[i, 0]:peaks[i+1 ,0]] > median).all() or \
                         (dist_array[peaks[i, 0]:peaks[i+1,0]] <= median).sum() < 10:
@@ -1237,11 +1080,9 @@ def ear_detection(distances):
         else:
             i += 1
     peaks = peaks[np.where(peaks[:,0] >= part_1)[0],:]
-    # print peaks
 
-    ''' Recherche des paliers correspondants a la tige '''
+    # Look for hollows representative of stem
     stems = list()
-    # peaks = np.array(peaks)
 
     route_distances = list()
     for i in range(len(distances)):
@@ -1249,19 +1090,17 @@ def ear_detection(distances):
     dist_diff, dist_x, dist_y = derivate(route_distances)
     dist_array = np.array(dist_y)
     dist_indexes = differential_cleaning(dist_diff, dist_x, dist_y, 10, 5, 2)
-    dist_new_indexes, dist_total_means = differential_separate(dist_diff,
-                                                               dist_x, dist_y,
+    dist_new_indexes, dist_total_means = differential_separate(dist_x, dist_y,
                                                                dist_indexes)
     for ind in dist_new_indexes:
         if ind[0] > part_1 and ind[1] < len(distances) and ind[1] - ind[0] > 20:
-            # print str(dist_array[ind[0]:ind[1]])
             if dist_array[ind[0]:ind[1]].min() <= mini and \
                             dist_array[ind[0]:ind[1]].max() <= median and \
                             ind[2] == 0:
                 stems.append([ind[0], ind[1],
                               np.mean(dist_array[ind[0]:ind[1]])])
 
-    ''' regroupement des paliers '''
+    # Group hollows
     i = 0
     while i < len(stems) - 1:
         j = 0
@@ -1279,23 +1118,19 @@ def ear_detection(distances):
                 else:
                     stems.pop(i + 1)
         else:
-            i+=1
-    # print "STEMS : "
-    # print stems
-    # print "PICS : "
-    # print peaks
+            i += 1
 
-    ''' enregistrement du pic precedent chaque palier, et ponderation '''
+    # Save previous peak of each hollow and weighting them from criteria
+    # detailed in method
     td = distances[part_1:]
     td.sort()
+    # keep only percentile at 15% on stem width to eliminate possible noise
     superior_min = td[int(round(len(td)*15/100))]
 
     solutions = np.empty([0, 2], 'int')
-    ear_position = 0
     stem_pos_after_ear = 0
     best_solution = 0
     first_found = False
-    # print len(peaks)
     iteration = 0
     while not first_found and iteration < 2:
         for stem in stems:
@@ -1306,102 +1141,20 @@ def ear_detection(distances):
                 if not first_found and \
                                 dist_array[stem[0]:stem[1]].mean() < mini:
                         for dist in dist_array[stem[0]:stem[1]]:
-                            # if dist < mini and float(distances[part_1:].count(dist))/float(len(distances[part_1:])) > 0.04:
                             if superior_min <= dist < mini:
                                 first_found = True
                                 solutions[len(solutions)-1, 1] += 2
-                                ear_position = solutions[len(solutions)-1, 0]
                                 break
                 if 8 < float(pic[2] - pic[1])*100./distances_length < 30:
                     solutions[len(solutions)-1, 1] += 1
-                # elif float(pic[2] - pic[1])*100./distances_length > 30:
-                    # solutions[len(solutions)-1,1] -= 1
-
-                # if float(stem[1] - stem[0])*100./distances_length < 4:
-                    # solutions[len(solutions)-1,1] -= 1
                 if solutions[len(solutions)-1, 1] > best_solution:
                     stem_pos_after_ear = stem[0]
 
-        # Forcer une solution, à 95% pour la partie haute si les 85% ne sont pas passé (trop de bruit)
-        # On relance alors l'algo en recherchant à 95%
+        # If no solution found with percentile at 15%, redo calculation with
+        # percentile at 5% to force a result
         if not first_found:
             solutions = np.empty([0, 2], 'int')
             superior_min = td[int(round(len(td)*5/100))]
         iteration += 1
 
-    # plt.clf()
-    # plt.plot(distances)
-    # for i in peaks[:,0]:
-        # plt.plot(i,distances[i], 'r*')
-    # for stem in stems:
-        # plt.plot(range(stem[0],stem[1]),dist_array[stem[0]:stem[1]],'r')
-    # plt.show()
-
-    return solutions, stems, peaks, [ear_position, pos_min, stem_pos_after_ear]
-
-
-def get_binaries(dossierBinaires, imagesInfo):
-    binaries = {'top':dict(), 'side':dict()}
-    taskid = imagesInfo['taskid']
-    plantid = imagesInfo['plantid']
-    studyid = imagesInfo["studyid"]
-    datetext = imagesInfo['images'][0]['date'].strftime("%Y-%m-%d_%H-%M-%S")
-
-    if studyid < 17:
-        subfolder = "plant_" + str(plantid)
-    elif studyid < 19 or (studyid == 19 and taskid < 6011):
-        subfolder = "task_" + str(taskid)
-    else:
-        subfolder = str(taskid)
-
-    for img in imagesInfo['images']:
-        angle = img['imgangle']
-        if img['viewtypeid'] == 1:
-            if studyid < 17:
-                imageName = "t-" + str(taskid) + "_p-" + str(plantid) + \
-                            "_tv_" + datetext + "_bin.png"
-                filepath = os.path.join(dossierBinaires, subfolder, imageName)
-            else:
-                imageName = "t-" + str(taskid) + "_p-" + str(plantid) + \
-                            "_tv0_" + datetext + "_bin.png"
-                filepath = os.path.join(dossierBinaires, subfolder,
-                                        "analysis_1", imageName)
-
-            binaries['top'][angle] = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
-        elif img['viewtypeid'] == 2:
-            imageName = "t-" + str(taskid) + "_p-" + str(plantid) + "_sv" + \
-                        str(angle) + "_" + datetext + "_bin.png"
-            # filepath = os.path.join(dossierBinaires, "plant_" + str(plantid),
-            #                         imageName)
-            if studyid < 17:
-                filepath = os.path.join(dossierBinaires, subfolder, imageName)
-            else:
-                filepath = os.path.join(dossierBinaires, subfolder,
-                                        "analysis_1", imageName)
-            binaries['side'][angle] = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
-    # try:
-    #     indicesTop = [i for i, x in enumerate(imagesInfo['images']['viewtypeid']) if x == 1]
-    #     for indTop in indicesTop:
-    #         angle = imagesInfo['images']['imgangle'][indTop]
-    #         #~ datetext = imagesInfo['date'][indTop].strftime("%Y-%m-%d_%H-%M-%S")
-    #         imageName = "t-" + str(taskid) + "_p-" + str(plantid) + "_tv_" + datetext + "_bin.png"
-    #         try:
-    #             filepath = os.path.join(dossierBinaires, "plant_" + str(plantid), imageName)
-    #             binaries['top'][angle] = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
-    #         except:
-    #             debug.append("Probleme sur la lecture de l'image top a l'angle " + str(angle))
-    #             success[0] = 0
-    # except:
-    #     pass
-    # try:
-    #     indicesSide = [i for i, x in enumerate(imagesInfo['images']['viewtypeid']) if x == 2]
-    #     for indSide in indicesSide:
-    #         angle = imagesInfo['images']['imgangle'][indSide]
-    #         #~ datetext = imagesInfo['date'][indSide].strftime("%Y-%m-%d_%H-%M-%S")
-    #         imageName = "t-" + str(taskid) + "_p-" + str(plantid) + "_sv" + str(angle) + "_" + datetext + "_bin.png"
-    #         filepath = os.path.join(dossierBinaires, "plant_" + str(plantid), imageName)
-    #         binaries['side'][imagesInfo['imgangle'][indSide]] = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
-    # except:
-    #     debug.append("Probleme sur la lecture des images sides")
-    #     success[1] = 0
-    return binaries
+    return solutions, stems, peaks, [pos_min, stem_pos_after_ear]

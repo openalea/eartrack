@@ -25,7 +25,6 @@ matrix:
         - conda install -c conda-forge numpy matplotlib opencv scikit-image
         - conda install -c openalea openalea.deploy openalea.core
 
-
     - language: generic
       os: linux
       env: PYTHON_VERSION="2.7"

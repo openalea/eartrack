@@ -1,9 +1,11 @@
 language: python
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
-  - "2.6"
   - "2.7"
 
+os:
+  - linux
+  - osx
 
 before_install:
 
@@ -31,7 +33,7 @@ before_install:
 
 install:
 
-  - python setup.py install --prefix=%CONDA_PREFIX
+  - python setup.py install
 
 before_script:
 

@@ -2,8 +2,8 @@
     :target: http://eartrack.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://travis-ci.org/artzet-s/eartrack.svg?branch=master
-    :target: https://travis-ci.org/artzet-s/eartrack
+.. image:: https://travis-ci.org/openalea/eartrack.svg?branch=master
+    :target: https://travis-ci.org/openalea/eartrack
 
 ========
 EarTrack

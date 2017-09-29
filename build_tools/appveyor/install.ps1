@@ -171,13 +171,13 @@ function InstallPip ($python_home) {
 
 function DownloadMiniconda ($python_version, $platform_suffix) {
     if ($python_version -eq "2.7") {
-        if ($platform_suffix -eq "64") {
+        if ($platform_suffix -eq "x86_64") {
             $filename = "Miniconda2-latest-Windows-x86_64.exe"
         } else {
             $filename = "Miniconda2-latest-Windows-x86.exe"
         }
     } else {
-        if ($platform_suffix -eq "64") {
+        if ($platform_suffix -eq "x86_64") {
             $filename = "Miniconda3-latest-Windows-x86_64.exe"
         } else {
             $filename = "Miniconda3-latest-Windows-x86.exe"

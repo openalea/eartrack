@@ -18,11 +18,11 @@ environment:
 
   matrix:
     - PYTHON: "C:\\Miniconda2-x86"
-      PYTHON_VERSION: "2.7.8"
+      PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Miniconda2-x64"
-      PYTHON_VERSION: "2.7.8"
+      PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "64"
 
 # Because we only have a single worker, we don't want to waste precious

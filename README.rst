@@ -45,7 +45,7 @@ Dependencies install
 
 .. code:: shell
 
-    conda install  -c conda-forge numpy matplotlib opencv scikit-image
+    conda install -c conda-forge numpy matplotlib opencv scikit-image
     conda install -c openalea openalea.deploy openalea.core
 
 (Optional) Package managing tools :

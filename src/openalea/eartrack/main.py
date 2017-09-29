@@ -22,17 +22,19 @@ def main():
 
         eartrack --help
     """
-
-    usage = """
-eartrack detect and track ear position on image of maize plants.
-Example:
-
-       eartrack -i XXXXX -o YYYYYY
-"""
     param_folder = os.path.join(shared_data(openalea.eartrack), "parameters")
     input_folder = os.path.join(shared_data(openalea.eartrack), "images")
     output_folder = os.path.join(os.path.expanduser('~'),
                                  'ear_tracking_results')
+
+    usage = """
+eartrack detect and track ear position on image of maize plants.
+
+Example:
+
+       eartrack -i %s -o %s
+"""%(input_folder, output_folder)
+
 
     parser = argparse.ArgumentParser(description=usage)
     parser.add_argument("-i", type=str,

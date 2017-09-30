@@ -25,7 +25,7 @@ Dependencies install
 
 .. code:: shell
 
-    conda install  -c conda-forge numpy matplotlib opencv scikit-image
+    conda install -c conda-forge numpy matplotlib opencv scikit-image
     conda install -c openalea openalea.deploy openalea.core
 
 (Optional) Package managing tools :
@@ -40,9 +40,7 @@ Eartrack install
 
 .. code:: shell
 
-    git clone https://github.com/openalea/eartrack.git
-    cd eartrack
-    python setup.py install --prefix=$CONDA_PREFIX
+    conda install -c openalea openalea.eartrack
 
 On Windows
 ----------
@@ -75,6 +73,4 @@ Eartrack install
 
 .. code:: shell
 
-    git clone https://github.com/openalea/eartrack.git
-    cd eartrack
-    python setup.py install --prefix=%CONDA_PREFIX%
+    conda install -c openalea openalea.eartrack

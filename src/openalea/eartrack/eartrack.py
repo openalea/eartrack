@@ -111,14 +111,12 @@ def top_analyse(top_binary_img, existing_angles, center_mask):
     return angles_to_keep, result_img, log
 
 
-def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
-                 pot_center):
+def side_analyse(binary_img, color_img, angle, pot_height, pot_center):
     """ Perform the side analyse an image of side view maize plant
 
     :param binary_img: (numpy array of uint8) binary image
     :param color_img: (numpy array of uint8) color image in BGR matrix
     :param angle: (int) view angle of the image
-    :param output_folder: (str) path to log folder
     :param pot_height: (int) height position of the top of the pot
     :param pot_center: (int) width position of the center of the pot
     :return: positions: (np array of uint numpy array) Kept position(s) as
@@ -126,12 +124,16 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
              useful_images: (np array of str) ids of images corresponding to
       each position
              log: (string) log to write
+             img_debug: (list of numpy array) list of output images from
+      differents stages of calculation
     """
     positions = np.empty([0, 3], 'int')
     useful_images = np.empty([0], 'int')
     log = ""
+    img_debug = dict()
 
     image_name = "side_" + str(angle) + ".png"
+    log += "\n-----------------------------\n"
     log += "Loading " + image_name + "\n"
     ''' LOADING BINARY AND ORIGINAL IMAGE '''
 
@@ -143,31 +145,31 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
     biggest_binary_region = binary_biggest_region(binary_img)
 
     # Extract skeleton of plant
-    skeleton_img = get_skeleton(biggest_binary_region)
+    output_skeleton_img = get_skeleton(biggest_binary_region)
 
     # Extract distance transform
     dist_trans_img = distance_transform(biggest_binary_region)
 
     # skimage's graph library and skeleton cleaning
-    begin, end = get_endpoints(skeleton_img, pot_center, pot_height)
+    begin, end = get_endpoints(output_skeleton_img, pot_center, pot_height)
     if begin == [-1, -1]:
         log += "Error in bottom's stem detection\n\n"
-        return positions, useful_images, log
-    skeleton_img = skeleton_cleaning(skeleton_img, begin)
-    route = find_cross_route(skeleton_img, begin)
+        return positions, useful_images, log, img_debug
+    output_skeleton_img = skeleton_cleaning(output_skeleton_img, begin)
+    route = find_cross_route(output_skeleton_img, begin)
     route.reverse()
 
     # Make color image with distance transform '''
-    norm_dt_img = dist_trans_img*255/dist_trans_img.max()
-    norm_dt_img = norm_dt_img.astype(int)
+    output_dt_img = dist_trans_img*255/dist_trans_img.max()
+    output_dt_img = output_dt_img.astype(int)
 
     # Make image binary and skeletons
-    output_img = np.zeros(color_img.shape, 'uint8')
-    output_img[:, :, 0] = biggest_binary_region
-    output_img[:, :, 1] = biggest_binary_region
-    output_img[:, :, 2] = biggest_binary_region
+    output_binary_img = np.zeros(color_img.shape, 'uint8')
+    output_binary_img[:, :, 0] = biggest_binary_region
+    output_binary_img[:, :, 1] = biggest_binary_region
+    output_binary_img[:, :, 2] = biggest_binary_region
     for pix in route:
-        output_img[pix[0], pix[1]-2:pix[1]+2, :] = (0, 0, 255)
+        output_binary_img[pix[0], pix[1]-2:pix[1]+2, :] = (0, 0, 255)
 
     # Get main direction of stem, rotate the stem and adapt on it the
     # following derivation algorithme
@@ -175,7 +177,7 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
     for pix in route:
         mask = dist_trans_img[pix[0], pix[1]]
         init_stem[pix[0]-mask:pix[0]+mask+1, pix[1]-mask:pix[1]+mask+1] = 255
-    result_img, a, b, r_xy, alpha = majors_axes_regression_line(init_stem)
+    output_stem_img, a, b, r_xy, alpha = majors_axes_regression_line(init_stem)
 
     # Perform derivation on route to
     diff, x, y = derivate(route)
@@ -211,13 +213,12 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
             biggest_binary_region[pix[0]-mask:pix[0]+mask+1,
             pix[1]-mask:pix[1]+mask+1]
 
-    result_img, a, b, r_xy, alpha = majors_axes_regression_line(cleaned_stem)
+    output_stem_img, a, b, r_xy, alpha = majors_axes_regression_line(cleaned_stem)
 
     if r_xy > 30:
         log += "Stem detection error\n\n"
-        cv2.imwrite(os.path.join(output_folder, name + "_stem_error" + ext),
-                    result_img)
-        return positions, useful_images, log
+        img_debug[name + "_stem_error" + ext] = output_stem_img
+        return positions, useful_images, log, img_debug
 
     skeleton_stem = np.zeros(binary_img.shape, 'uint8')
     for pixel in route:
@@ -225,7 +226,7 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
     begin, end = get_endpoints(skeleton_stem, pot_center, pot_height)
     if begin == [-1, -1] or end == [-1, -1]:
         log += "Error in bottom or top of stem detection after cleaning stem"
-        return positions, useful_images, log
+        return positions, useful_images, log, img_debug
     route = find_route(skeleton_stem, begin, end)
 
     # Statistics on distances curve to detect probable ear position
@@ -266,20 +267,20 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
 
     log += "Solutions : \n"
     for sol in solutions:
-        log += "solution : " + str(route[sol[0]][0]) + ", weight : " + \
+        log += "\tsolution : " + str(route[sol[0]][0]) + ", weight : " + \
                  str(sol[1]) + "\n"
-    log += "Peaks (leave) : \n"
+    log += "Peaks (leaves) : \n"
     for pic in pics:
-        log += "peak : " + str(route[pic[0]][0]) + ", begin : " + \
+        log += "\tpeak : " + str(route[pic[0]][0]) + ", begin : " + \
                  str(route[pic[1]][0]) + ", end : " + str(route[pic[2]][0]) + \
                  ", relative length : " + \
                  str(float(pic[2] - pic[1])*100./distances_length) + "\n"
-    log += "Troughs (stem) : \n"
+    log += "Troughs (stem part) : \n"
     for stem in stems:
-        log += "begin : " + str(route[stem[0]][0]) + ", end : " + \
+        log += "\tbegin : " + str(route[stem[0]][0]) + ", end : " + \
                  str(route[stem[1]][0]) + ", relative length : " + \
                  str(float(stem[1] - stem[0])*100./distances_length) + "\n"
-    log += "\n\n"
+    log += "\n"
 
     # BUG X11 to generate figure
     # plt.clf()
@@ -293,58 +294,42 @@ def side_analyse(binary_img, color_img, angle, output_folder, pot_height,
     #    plt.plot(range(stem[0],stem[1]),distances[stem[0]:stem[1]],'r')
     # plt.savefig(os.path.join(output_folder,"courbe_"+name+ext))
 
-    f = open(os.path.join(output_folder, "stem_width_" + name + ".csv"), "w")
-    f.write(';'.join(map(str,distances)))
-    f.close()
-
     # yellow square on solution
-    colored_image = color_img.copy()
-    colored_image[route[position][0]-5:route[position][0]+5,
+    output_results_img = color_img.copy()
+    output_results_img[route[position][0]-5:route[position][0]+5,
                   route[position][1]-5:route[position][1]+5, :] = (0, 255, 255)
 
     for i in range(len(route)):
-        output_img[route[i][0], route[i][1]-2:route[i][1]+2, :] = (0, 255, 0)
+        output_binary_img[route[i][0], route[i][1]-2:route[i][1]+2, :] = (0, 255, 0)
         if i < stem_pos_after_ear:
             mask = distances[minus_pos]
         else:
             mask = distances[stem_pos_after_ear]
         if distances[i] == distances[minus_pos] and i < part_1:
-            colored_image[route[i][0], route[i][1]-mask:route[i][1]+mask+1, 0] \
+            output_results_img[route[i][0], route[i][1]-mask:route[i][1]+mask+1, 0] \
                 = 255
         elif distances[i] == distances[stem_pos_after_ear] \
                 and i >= part_1 and position:
-            colored_image[route[i][0], route[i][1]-mask:route[i][1]+mask+1, 1] \
+            output_results_img[route[i][0], route[i][1]-mask:route[i][1]+mask+1, 1] \
                 = 255
         else:
-            colored_image[route[i][0], route[i][1]-mask:route[i][1]+mask+1, 2] \
+            output_results_img[route[i][0], route[i][1]-mask:route[i][1]+mask+1, 2] \
                 = 255
-    output_img[route[position][0]-5:route[position][0]+5,
-               route[position][1]-5:route[position][1]+5, :] = (0, 0, 255)
-    output_img[route[minus_pos][0]-5:route[minus_pos][0]+5,
-               route[minus_pos][1]-5:route[minus_pos][1]+5, :] = (255, 0, 0)
+    output_binary_img[route[position][0]-5:route[position][0]+5,
+                      route[position][1]-5:route[position][1]+5, :] = (0, 0, 255)
+    output_binary_img[route[minus_pos][0]-5:route[minus_pos][0]+5,
+                      route[minus_pos][1]-5:route[minus_pos][1]+5, :] = (255, 0, 0)
 
     # save images
-    cv2.imwrite(os.path.join(output_folder, name + "_DT" + ext),
-                norm_dt_img)
-
-    cv2.imwrite(os.path.join(output_folder, name + "_mini" + ext),
-                colored_image)
-
-    cv2.imwrite(os.path.join(output_folder, name + "_Bin" + ext),
-                output_img)
-
-    cv2.imwrite(os.path.join(output_folder, name + "_tigeCleaned" + ext),
-                result_img)
-
-    skeleton_img *= 255
-
-    cv2.imwrite(os.path.join(output_folder, name + "_skel" + ext),
-                skeleton_img)
+    img_debug[name + "_distance_transform" + ext] = output_dt_img
+    img_debug[name + "_result" + ext] = output_results_img
+    img_debug[name + "_binary" + ext] = output_binary_img
+    img_debug[name + "_cleaned_stem" + ext] = output_stem_img
+    img_debug[name + "_skeleton" + ext] = output_skeleton_img * 255
 
     # Log distance values
-    log += image_name + ";" + ';'.join(map(str, distances)) + "\n"
-    log += "\n"
-    return positions, useful_images, log
+    log += "Stem width : " + ';'.join(map(str, distances)) + "\n"
+    return positions, useful_images, log, img_debug
 
 
 def get_skeleton(binary_image):

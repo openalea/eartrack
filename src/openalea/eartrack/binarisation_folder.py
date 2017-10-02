@@ -10,7 +10,7 @@ import numpy
 import openalea.eartrack.binarisation as bin
 
 
-def init(param_folder, input_folder, output_folder, log):
+def init(param_folder, input_folder, output_folder, log=False):
     files = os.listdir(input_folder)
 
     pattern = '^plant\-([0-9]*)\_task\-([0-9]*)\_(s|t)v([0-9]*)\_(cabin\-1|2)\.png$'

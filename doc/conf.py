@@ -15,10 +15,37 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../src'))
+
+# FAQ : I get import errors on libraries that depend on C modules
+# This happens because our build system doesn’t have the dependencies for
+# building your project. This happens with things like libevent and mysql,
+# and other python things that depend on C libraries.
+# We can’t support installing random C binaries on our system,
+# so there is another way to fix these imports.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+# You can mock out the imports for these modules in your conf.py with the
+# following snippet:
+
+import sys
+from mock import Mock as MagicMock
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return MagicMock()
+
+MOCK_MODULES = ['numpy',
+                'opencv',
+                'cv2',
+                'matplotlib',
+                'skimage',
+                'skimage.morphology']
+
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 # -- General configuration ------------------------------------------------
@@ -181,6 +208,9 @@ texinfo_documents = [
      author, 'eartrack', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+
+
 
 
 

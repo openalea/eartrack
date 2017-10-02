@@ -1,2 +1,2 @@
-* Nicolas Brichet : nicolas dot brichet at inra dot fr
+* Nicolas Brichet <brichet@supagro.inra.fr>
 

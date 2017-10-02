@@ -8,7 +8,6 @@ eartrack
 
     top_analyse
     side_analyse
-    pixels_to_mm
     get_skeleton
     distance_transform
     binary_biggest_region

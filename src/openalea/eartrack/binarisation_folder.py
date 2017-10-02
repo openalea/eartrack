@@ -10,8 +10,7 @@ import numpy
 import openalea.eartrack.binarisation as bin
 
 
-def init(param_folder, input_folder, output_folder):
-    # images_folder = os.path.join(input_folder, 'images')
+def init(param_folder, input_folder, output_folder, log):
     files = os.listdir(input_folder)
 
     pattern = '^plant\-([0-9]*)\_task\-([0-9]*)\_(s|t)v([0-9]*)\_(cabin\-1|2)\.png$'
@@ -34,17 +33,18 @@ def init(param_folder, input_folder, output_folder):
                                               'cabin': cabin})
 
             # Create output folders
-            plant_folder = os.path.join(output_folder, str(plant))
-            if not os.path.isdir(plant_folder):
-                os.mkdir(plant_folder)
+            if log:
+                plant_folder = os.path.join(output_folder, str(plant))
+                if not os.path.isdir(plant_folder):
+                    os.mkdir(plant_folder)
 
-            result_folder = os.path.join(plant_folder, 'results')
-            if not os.path.isdir(result_folder):
-                os.mkdir(result_folder)
+                result_folder = os.path.join(plant_folder, 'results')
+                if not os.path.isdir(result_folder):
+                    os.mkdir(result_folder)
 
-            task_folder = os.path.join(plant_folder, str(task))
-            if not os.path.isdir(task_folder):
-                os.mkdir(task_folder)
+                task_folder = os.path.join(plant_folder, str(task))
+                if not os.path.isdir(task_folder):
+                    os.mkdir(task_folder)
 
             img_desc[plant][task][view][angle] = os.path.join(input_folder, f)
 
@@ -63,9 +63,11 @@ def init(param_folder, input_folder, output_folder):
                 if type(value) in types.StringTypes and '.png' in value:
                     method = cv2.IMREAD_GRAYSCALE if 'mask' in param else \
                         cv2.IMREAD_COLOR
-                    parameters[cabin][view][param] = cv2.imread(os.path.join(param_folder, value), method)
+                    parameters[cabin][view][param] = \
+                        cv2.imread(os.path.join(param_folder, value), method)
                 if type(value) == types.ListType:
-                    parameters[cabin][view][param] = tuple(parameters[cabin][view][param])
+                    parameters[cabin][view][param] = \
+                        tuple(parameters[cabin][view][param])
 
     return img_desc, parameters
 

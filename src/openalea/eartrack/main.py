@@ -48,7 +48,6 @@ Example:
     if args.o:
         output_folder = args.o
 
-
     if not os.path.isdir(output_folder):
         os.mkdir(output_folder)
 
@@ -86,11 +85,9 @@ Example:
             log_file.write(top_log)
             cv2.imwrite(os.path.join(task_folder, "top0.png"), result_img)
 
-            # print str(finTop - begin_time)
             kept_positions = np.empty([0, 3], 'int')
             useful_kept_images = np.empty([0], 'int')
             for angle in angles_to_keep:
-                # debutSide = time.time()
                 if isinstance(binaries["side"][angle], type(None)):
                     log_file.write("Missing side " + str(angle) +
                                    " binary image\n")
@@ -138,7 +135,6 @@ Example:
                                 imageFinale)
                     result_text += str(task) + ";" + str(mean_pos[0]) + ";" + \
                                   str(mean_pos[1]) + "\n"
-                    # pos_to_record.append(finales_positions[0,:])
                     mean_pos = np.append(mean_pos, finales_positions[0, 2])
                     pos_to_record.append(mean_pos)
                 elif finales_positions.shape[0] == 2:

@@ -22,15 +22,13 @@ def test_eartrack():
     images_folder = os.path.join(share_data_directory, "images")
 
     img_desc, parameters = st_lib.init(param_folder, images_folder,
-                                       output_folder)
+                                       output_folder, log=False)
 
     # Selection of one plant and one imaging task
     plant = img_desc.keys()[0]
     task = img_desc[plant].keys()[0]
 
-    results_folder = os.path.join(output_folder, str(plant), 'results')
     cabin = img_desc[plant][task]['cabin']
-    task_folder = os.path.join(output_folder, str(plant), str(task))
 
 
     # Read images
@@ -51,16 +49,15 @@ def test_eartrack():
     kept_positions = np.empty([0, 3], 'int')
     useful_kept_images = np.empty([0], 'int')
     for angle in angles_to_keep:
-        positions, imagesUtiles, debug = et_lib.side_analyse(
+        positions, useful_images, side_log, img_debug = et_lib.side_analyse(
             binaries["side"][angle],
             images["side"][angle],
             angle,
-            task_folder,
             parameters[cabin]["side"]["pot_height"],
             parameters[cabin]["side"]["pot_width"])
 
         kept_positions = np.append(kept_positions, positions, axis=0)
-        useful_kept_images = np.append(useful_kept_images, imagesUtiles, axis=0)
+        useful_kept_images = np.append(useful_kept_images, useful_images, axis=0)
 
     # ==========================================================================
 

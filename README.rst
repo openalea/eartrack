@@ -4,6 +4,11 @@
 
 .. image:: https://travis-ci.org/openalea/eartrack.svg?branch=master
     :target: https://travis-ci.org/openalea/eartrack
+    :alt: Travis build status (osx and linux)
+
+.. image:: https://ci.appveyor.com/api/projects/status/bpbmurhqv10pcy0j/branch/master?svg=true
+    :target: https://ci.appveyor.com/project/artzet-s/eartrack-xo7du
+    :alt: Appveyor build status (Windows x86 and x64)
 
 ========
 EarTrack

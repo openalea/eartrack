@@ -40,14 +40,20 @@ Installation with Miniconda
 Miniconda installation
 ----------------------
 
-Follow official website instruction to install miniconda :
+Follow official website instruction to install miniconda : http://conda.pydata.org/miniconda.html
 
-http://conda.pydata.org/miniconda.html
+To create conda `environment <https://conda.io/docs/user-guide/tasks/manage-environments.html>`_  and activate it :
+
+.. code:: shell 
+    
+    conda create -n eartrack python=2.7
+    source activate eartrack # on linux and osx
+    activate eartrack # on windows
 
 User installation
 -----------------
 
-Available for OS: osx_x64, win_x64 and linux_x64.
+Available for linux, Windows and Mac OSX on 64 bits.
 
 .. code:: shell
 
@@ -63,9 +69,8 @@ Please follow documentation installation page `<https://eartrack.readthedocs
 Help and Support
 ----------------
 
-If you run into installation error, runtime error or something else, PLEASE,
-report to us in the "Issues" section, we'll try to resolve it as soon as
-possible.
+Please open an **Issue** if you need support or that you run into any error (Installation, Runtime, etc.). 
+We'll try to resolve it as soon as possible.
 
 Authors
 -------

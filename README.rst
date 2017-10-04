@@ -9,11 +9,16 @@
 .. image:: https://ci.appveyor.com/api/projects/status/bpbmurhqv10pcy0j/branch/master?svg=true
     :target: https://ci.appveyor.com/project/artzet-s/eartrack-xo7du
     :alt: Appveyor build status (Windows x86 and x64)
+    
+.. image:: https://anaconda.org/openalea/openalea.eartrack/badges/version.svg   
+    :target: https://anaconda.org/openalea/openalea.eartrack
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1002155.svg
    :target: https://doi.org/10.5281/zenodo.1002155
 
-
+.. image:: https://anaconda.org/openalea/openalea.eartrack/badges/license.svg
+    :target: https://anaconda.org/openalea/openalea.eartrack
+    
 ========
 EarTrack
 ========

@@ -313,8 +313,8 @@ def side_analysis(binary_img, color_img, angle, pot_height, pot_center):
 
     # draw yellow square on solution
     output_results_img = color_img.copy()
-    output_results_img[route[position][0]-5:route[position][0]+5,
-                  route[position][1]-5:route[position][1]+5, :] = (0, 255, 255)
+    output_results_img[route[position][0]-31:route[position][0]+30,
+                  route[position][1]-31:route[position][1]+30, :] = (0, 255, 255)
 
     for i in range(len(route)):
         output_binary_img[route[i][0], route[i][1]-2:route[i][1]+2, :] = (0, 255, 0)

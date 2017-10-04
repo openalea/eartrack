@@ -40,16 +40,16 @@ def test_eartrack():
 
     # Compute binaries
     existing_angles = binaries["side"].keys()
-    angles_to_keep, result_img, top_log = et_lib.top_analyse(binaries["top"][0],
-                                                             existing_angles,
-                                                             mask_top_center)
+    angles_to_keep, result_img, top_log = et_lib.top_analysis(binaries["top"][0],
+                                                              existing_angles,
+                                                              mask_top_center)
 
     # ==========================================================================
 
     kept_positions = np.empty([0, 3], 'int')
     useful_kept_images = np.empty([0], 'int')
     for angle in angles_to_keep:
-        positions, useful_images, side_log, img_debug = et_lib.side_analyse(
+        positions, useful_images, side_log, img_debug = et_lib.side_analysis(
             binaries["side"][angle],
             images["side"][angle],
             angle,

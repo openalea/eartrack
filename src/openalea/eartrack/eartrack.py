@@ -10,6 +10,9 @@ import multiprocessing as mp
 import numpy as np
 import cv2
 
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+
 from skimage import measure
 from skimage.morphology import skeletonize, medial_axis, label
 from skimage import graph
@@ -21,11 +24,11 @@ import openalea.eartrack.binarisation as bin
 writing_semaphore = mp.BoundedSemaphore()
 
 
-def top_analyse(top_binary_img, existing_angles, center_mask):
-    """
-    This function analyses top binary image to determine best side view images
-    to see the stem and find ear
+def top_analysis(top_binary_img, existing_angles, center_mask):
+    """ Top image analysis
 
+    Analyse top binary image to determine best side view images allowing to
+    see the stem and find ear
     :param top_binary_img: (numpy array of uint8) representing binary image
     :param existing_angles: (list of int) list of existing angle for this
     snapshot
@@ -111,9 +114,11 @@ def top_analyse(top_binary_img, existing_angles, center_mask):
     return angles_to_keep, result_img, log
 
 
-def side_analyse(binary_img, color_img, angle, pot_height, pot_center):
-    """ Perform the side analyse an image of side view maize plant
+def side_analysis(binary_img, color_img, angle, pot_height, pot_center):
+    """ Side image analysis for ear tracking
 
+    Perform the analysis of side view maize plant's image to extract ear
+    position
     :param binary_img: (numpy array of uint8) binary image
     :param color_img: (numpy array of uint8) color image in BGR matrix
     :param angle: (int) view angle of the image
@@ -125,7 +130,7 @@ def side_analyse(binary_img, color_img, angle, pot_height, pot_center):
       each position
              log: (string) log to write
              img_debug: (list of numpy array) list of output images from
-      differents stages of calculation
+      different stages of calculation
     """
     positions = np.empty([0, 3], 'int')
     useful_images = np.empty([0], 'int')
@@ -135,6 +140,7 @@ def side_analyse(binary_img, color_img, angle, pot_height, pot_center):
     image_name = "side_" + str(angle) + ".png"
     log += "\n-----------------------------\n"
     log += "Loading " + image_name + "\n"
+
     ''' LOADING BINARY AND ORIGINAL IMAGE '''
 
     binary_img = bin.close(binary_img, iterations=4)
@@ -282,19 +288,30 @@ def side_analyse(binary_img, color_img, angle, pot_height, pot_center):
                  str(float(stem[1] - stem[0])*100./distances_length) + "\n"
     log += "\n"
 
-    # BUG X11 to generate figure
-    # plt.clf()
-    # plt.plot(distances)
-    # plt.plot(minus_pos, -1,'r*')
-    # plt.plot(stem_pos, 0,'g*')
-    # plt.plot(position, -1,'b*')
-    # for i in pics[:,0]:
-    #    plt.plot(i,distances[i], 'r*')
-    # for stem in stems:
-    #    plt.plot(range(stem[0],stem[1]),distances[stem[0]:stem[1]],'r')
-    # plt.savefig(os.path.join(output_folder,"courbe_"+name+ext))
+    # The following part can fail on server without server X
+    width_curve = None
+    try:
+        fig = Figure()
+        canvas = FigureCanvasAgg(fig)
+        ax = fig.gca()
+        ax.plot(distances)
+        ax.plot(minus_pos, -1, 'rX')
+        ax.plot(stem_pos_after_ear, 0, 'gX')
+        ax.plot(position, -1, 'bX')
+        for i in pics[:, 0]:
+            ax.plot(i,distances[i], 'r*')
+        for stem in stems:
+            ax.plot(range(stem[0], stem[1]), distances[stem[0]:stem[1]], 'r')
+        im_size = fig.get_size_inches() * fig.dpi
+        canvas.draw()
 
-    # yellow square on solution
+        width_curve = np.fromstring(canvas.tostring_rgb(), dtype='uint8')
+        width_curve = width_curve.reshape(int(im_size[1]), int(im_size[0]), 3)
+        width_curve = width_curve[:, :, ::-1]
+    except:
+        pass
+
+    # draw yellow square on solution
     output_results_img = color_img.copy()
     output_results_img[route[position][0]-5:route[position][0]+5,
                   route[position][1]-5:route[position][1]+5, :] = (0, 255, 255)
@@ -326,6 +343,8 @@ def side_analyse(binary_img, color_img, angle, pot_height, pot_center):
     img_debug[name + "_binary" + ext] = output_binary_img
     img_debug[name + "_cleaned_stem" + ext] = output_stem_img
     img_debug[name + "_skeleton" + ext] = output_skeleton_img * 255
+    if isinstance(width_curve, np.ndarray):
+        img_debug[name + "_width_curve" + ext] = width_curve
 
     # Log distance values
     log += "Stem width : " + ';'.join(map(str, distances)) + "\n"
@@ -333,9 +352,9 @@ def side_analyse(binary_img, color_img, angle, pot_height, pot_center):
 
 
 def get_skeleton(binary_image):
-    """ This function use skimage medial axis to perform skeleton on binary
-    image
+    """ Perform skeleton on image
 
+    Use skimage medial axis to perform skeleton on binary image
     :param binary_image: (numpy 2D array of binary uint8) binary image to
     perform skeleton
     :return: (numpy 2D array of binary uint8) binary image of skeleton
@@ -344,8 +363,9 @@ def get_skeleton(binary_image):
 
 
 def distance_transform(binary_image, distance_type=1, mask_size=5):
-    """ This function perform opencv distance transform on binary image
+    """ Perform distance transform on image
 
+    Perform opencv distance transform on binary image
     :param binary_image: (numpy 2D array of binary uint8) binary image to
     perform distance transorm
     :param distance_type: see cv::DistanceTypes
@@ -378,8 +398,9 @@ def binary_biggest_region(binary_image):
 
 
 def get_endpoints(skeleton, center, height):
-    """ Try to find the bottom and upper node of the stem in a maize plant
+    """ Look for stem extremities
 
+    Try to find the bottom and upper node of the stem in a maize plant
     :param skeleton: (numpy 2D array of binary uint8) representing the skeleton
     of side view image of a maize plant
     :param center: (int) pixel in the width center of the pot
@@ -471,8 +492,10 @@ def skeleton_cleaning(skeleton, begin):
 
 
 def find_route(skeleton, begin, end):
-    """ Find the shortest route on a skeleton between 2 pixels
+    """ Perform shortest path algorithm on skeleton image
 
+    Find the shortest route on a skeleton between 2 pixels using graph
+    shortest path algorithm
     :param skeleton: (numpy 2D array of binary uint8) representing the skeleton
     of side view image of a maize plant
     :param begin: (list of 2 int) pixel of the bottom of the stem
@@ -486,9 +509,10 @@ def find_route(skeleton, begin, end):
 
 
 def find_cross_route(skeleton, begin):
-    """ Find the shortest route on a skeleton between a beginning pixel and the
-    upper cross on the skeleton
+    """ Perform shortest path algorithm on skeleton image unknowing upper node
 
+    Find the shortest route on a skeleton between a beginning pixel and the
+    upper cross on the skeleton using graph shortest path algorithm
     :param skeleton: (numpy 2D array of binary uint8) representing the skeleton
     of side view image of a maize plant
     :param begin: (list of 2 int) pixel of the bottom of the stem
@@ -508,9 +532,9 @@ def find_cross_route(skeleton, begin):
 
 
 def get_distances(route, distance_transform_img):
-    """ Find the distances values from the selected route and the distance
-    transform's image
+    """ Get the distances transform values along a route
 
+    'route' are coordinates in the 'distance_transform_img' shape.
     :param route: (list of list of 2 int) list of all the pixels to follow a
     route on image
     :param distance_transform_img: (numpy 2D array of uint8) binary image
@@ -524,9 +548,10 @@ def get_distances(route, distance_transform_img):
 
 
 def derivate(route):
-    """ derivate a route in order to analyse increases and decreases
-    (variation of directions)
+    """ Perform discrete derivative on a curve
 
+    Perform discrete derivative on a route in order to analyse variation of
+    directions
     :param route: (list of list of 2 int) list of all the pixels to follow a
     route on image
     :return: diff: (list of int) values in [-1, 0, 1] representing the variation
@@ -582,8 +607,9 @@ def derivate(route):
 
 
 def differential_cleaning(diff, x, y, max_space, min_length, min_height):
-    """ Analyse derivatives values to keep only the significant variations
+    """ Clean derivatives values
 
+    Analyse derivatives values to keep only the significant variations
     :param diff: (list of int) values in [-1, 0, 1] representing the variation
     of a route
     :param x: (list of int) x original position of each diff value
@@ -661,10 +687,18 @@ def differential_cleaning(diff, x, y, max_space, min_length, min_height):
 
 
 def differential_separate(x, y, indices):
-    ''' Go deeper in derivates datas analyse to find different fast of
-    increase and decrease in order to detect increases and decreases even
-    on inclined stem '''
-    new_index = list()
+    """ Deep analysis of derivatives values
+
+    Go deeper in derivatives values analyse to find different fast of increase and
+    decrease in order to detect increases and decreases even on inclined stem
+    :param x: (list of int) x original position of each diff value
+    :param y: (list of int) y original position of each diff value
+    :param indices: (list of 3 int list) describing the differentials values by
+        parts of same variation [[begin, end, variation]]
+    :return: new_indexes : (list of 3 int list) describing new variations
+             total_means : (list of float) slope of each part of 'new_indexes'
+    """
+    new_indexes = list()
     total_means = list()
     for ind in indices:
         direction = ind[2]
@@ -729,16 +763,16 @@ def differential_separate(x, y, indices):
                     else:
                         break
             for i in range(len(tab)):
-                new_index.append(tab[i])
+                new_indexes.append(tab[i])
                 total_means.append(means[i])
         else:
-            if ind[1] - ind[0] < 4 and len(new_index):
-                new_index[len(new_index) - 1][1] = ind[1]
+            if ind[1] - ind[0] < 4 and len(new_indexes):
+                new_indexes[len(new_indexes) - 1][1] = ind[1]
             else:
-                new_index.append(ind)
+                new_indexes.append(ind)
                 total_means.append(0)
 
-    return new_index, total_means
+    return new_indexes, total_means
 
 
 def majors_axes_regression_ww(pixels):
@@ -773,8 +807,9 @@ def majors_axes_regression_ww(pixels):
 
 
 def majors_axes_regression_line(binary_img):
-    """ Performs a major axis regression on binary image as distributed dots
+    """ Performs a major axis regression on binary image
 
+    True pixels of image are used as distributed dots
     :param binary_img: (numpy 2D binary uint8 array) binary image to perform
     regression
     :return: result: (numpy 3D uint8 array) color image with regression line
@@ -801,9 +836,9 @@ def majors_axes_regression_line(binary_img):
 
 
 def robust_majors_axes_regression_ww(pixels):
-    """ Performs a robust (hinich et al.) major axis regression on 2D
-    distributed dots
+    """ Performs a robust major axis regression on 2D distributed dots
 
+    Robustness come from 'hinich et al.' algorithm
     :param pixels: (np array of 2 np array of int) distributed dots to perform
     regression
     :return: a: (float) slope of robust regression line
@@ -860,7 +895,8 @@ def robust_majors_axes_regression_ww(pixels):
 
 
 def get_view_angles(binary_img, mask):
-    """ This function analyse top view binary image to get
+    """ Extract interesting view angles from top image
+
     :param binary_img: (numpy array of uint8) representing binary image
     :param mask: (numpy array of uint8) mask representing  the center of
     image to know if a leave can be considered as obstructing
@@ -907,11 +943,10 @@ def get_view_angles(binary_img, mask):
                 if n2 > n/20:
                     a2, b2, useful_pixels2, useless_pixels2 = \
                         robust_majors_axes_regression_ww(pixels2)
-
                     alpha2 = (m.atan2(a2/m.sqrt(m.pow(a2, 2) + 1),
                                       1/m.sqrt(m.pow(a2, 2) + 1)))*180/m.pi
                     errors = np.array(abs(useful_pixels2[:, 1] -
-                                           a * useful_pixels2[:, 0] - b))
+                                          a * useful_pixels2[:, 0] - b))
                     x_intersection_line = int((b - b2)/(a2 - a))
                     y_intersection_line = int(a*x_intersection_line + b)
                     useless_pixels = np.append(useless_pixels, useless_pixels2, axis=0)
@@ -959,9 +994,10 @@ def get_view_angles(binary_img, mask):
 
 
 def robust_mean(values, images, std_error=20):
-    """ This function perform a 'vote' between few values to extract the most
-    representative(s) and the corresponding images
+    """ Look for most representative position in a small set of positions
 
+    This function perform a 'vote' between few values to extract the most
+    representative(s) and the corresponding images
     :param values: (2 dimensional numpy float array) the vote will be perform on
     first value of each 2 values array
     :param images: (numpy array of string) id of image corresponding to each
@@ -1004,7 +1040,8 @@ def robust_mean(values, images, std_error=20):
 
 
 def ear_detection(distances):
-    """
+    """ Look for ear in a stem width curve
+
 
     :param distances: (list of int) representing distance transform values all
     along the stem

@@ -102,8 +102,8 @@ Example:
                             verbose)
                 raise ValueError("Missing top binary image")
             angles_to_keep, result_img, top_log = (
-                et_lib.top_analyse(binaries["top"][0], existing_angles,
-                                   mask_top_center))
+                et_lib.top_analysis(binaries["top"][0], existing_angles,
+                                    mask_top_center))
             print_o(log_file, top_log, log, verbose)
             if log:
                 cv2.imwrite(os.path.join(task_folder, "top0.png"), result_img)
@@ -116,11 +116,11 @@ Example:
                                 " binary image\n", log, verbose)
                     continue
                 positions, useful_img, side_log, img_debug = (
-                    et_lib.side_analyse(binaries["side"][angle],
-                                        images["side"][angle],
-                                        angle,
-                                        parameters[cabin]["side"]["pot_height"],
-                                        parameters[cabin]["side"]["pot_width"],))
+                    et_lib.side_analysis(binaries["side"][angle],
+                                         images["side"][angle],
+                                         angle,
+                                         parameters[cabin]["side"]["pot_height"],
+                                         parameters[cabin]["side"]["pot_width"]))
                 print_o(log_file, side_log, log, verbose)
                 if log:
                     for name, img in img_debug.items():

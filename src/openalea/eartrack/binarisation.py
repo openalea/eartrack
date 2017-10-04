@@ -4,32 +4,71 @@ import numpy
 import cv2
 
 
-def dilate(image, kshape='MORPH_CROSS', ksize=3, iterations=1):
-    """Dilates an image
+def dilate(binary_image, kshape='MORPH_CROSS', ksize=3, iterations=1):
     """
+    Dilate an image
+
+    Dilate an image using opencv dilate method
+    :param binary_image: numpy.ndarray
+        2-D array
+    :param kshape: str, opt
+        See opencv documentation
+    :param ksize: int, opt
+        See opencv documentation
+    :param iterations: int, opt
+        Number of iteration of dilatation
+    :return: dilated : numpy.ndarray 2-D image
+    """
+
     kshape = getattr(cv2, kshape)
     element = cv2.getStructuringElement(kshape, (ksize, ksize))
-    dilated = cv2.dilate(image, element, iterations=iterations)
+    dilated = cv2.dilate(binary_image, element, iterations=iterations)
     return dilated
 
 
-def open(image, kshape='MORPH_CROSS', ksize=3, iterations=1):
-    """Performs image openning
+def open(binary_image, kshape='MORPH_CROSS', ksize=3, iterations=1):
+    """
+    Open an image
+
+    Perform morphology opening algorithm on image using opencv method
+    :param binary_image: numpy.ndarray
+        2-D array
+    :param kshape: str, opt
+        See opencv documentation
+    :param ksize: int, opt
+        See opencv documentation
+    :param iterations: int, opt
+        Number of iteration
+    :return: opened : numpy.ndarray 2-D image
     """
     kshape = getattr(cv2, kshape)
     element = cv2.getStructuringElement(kshape, (ksize, ksize))
-    opened = cv2.morphologyEx(image, cv2.MORPH_OPEN, element,
+    opened = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, element,
                               iterations=iterations)
     return opened
 
-def close(image, kshape='MORPH_CROSS', ksize=3, iterations=1):
-    """Performs image openning
+
+def close(binary_image, kshape='MORPH_CROSS', ksize=3, iterations=1):
+    """
+    Close an image
+
+    Perform morphology closing algorithm on image using opencv method
+    :param binary_image: numpy.ndarray
+        2-D array
+    :param kshape: str, opt
+        See opencv documentation
+    :param ksize: int, opt
+        See opencv documentation
+    :param iterations: int, opt
+        Number of iteration
+    :return: closed : numpy.ndarray 2-D image
     """
     kshape = getattr(cv2, kshape)
     element = cv2.getStructuringElement(kshape, (ksize, ksize))
-    opened = cv2.morphologyEx(image, cv2.MORPH_CLOSE, element,
+    closed = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, element,
                               iterations=iterations)
-    return opened
+    return closed
+
 
 def erode_dilate(binary_image,
                  kernel_shape=(3, 3),
@@ -244,20 +283,53 @@ def threshold_meanshift(image, mean_image,
     return out * 255
 
 
-def meanshift_hsv(image, mean_image,
-                  threshold=0.3,
-                  hsv_min=(30, 11, 0),
-                  hsv_max=(129, 254, 141),
-                  iterations_clean_noise=3,
-                  iterations=1,
-                  mask_mean_shift=None,
-                  mask_hsv=None,
-                  mask_clean_noise=None):
+def mean_shift_hsv(image, mean_img,
+                   threshold=0.3,
+                   hsv_min=(30, 11, 0),
+                   hsv_max=(129, 254, 141),
+                   iterations_clean_noise=3,
+                   iterations=1,
+                   mask_mean_shift=None,
+                   mask_hsv=None,
+                   mask_clean_noise=None):
+    """
+    Segmentation using mean shift method
+
+    Compute segmentation of an object in image using a combination of
+    meanshift method and hsv threshold
+
+    :param image: numpy.ndarray of integers
+        3-D array
+    :param mean_img: numpy.ndarray of integers (same shape as 'image')
+        3-D array
+    :param threshold: float, optional
+        Threshold value. Must between 0.0 and 1.0
+    :param hsv_min: tuple of 3 int, optional
+        Minimum values to threshold hsv image. Values must be between 0 and 255
+    :param hsv_max: tuple of 3 int, optional
+        Maximum values to threshold hsv image. Values must be between 0 and 255
+    :param iterations_clean_noise: int, optional
+        Number of iterations to clean noise on binary result image under mask
+    :param iterations: int, optional
+        Number of iterations to clean noise on binary result image
+    :param mask_mean_shift: numpy.ndarray, optional
+        Array 2-D of same shape as `image`. Only points at which mask == True
+        will be calculated in meanshift method.
+    :param mask_hsv: numpy.ndarray, optional
+        Array 2-D of same shape as `image`. Only points at which mask == True
+        will be calculated with hsv method.
+    :param mask_clean_noise: numpy.ndarray, optional
+        Array 2-D of same shape as `image`. Only points at which mask == True
+        will be cleaned
+    :return:
+        result: numpy.ndarray 2-D of same shape as `image`
+                Binary image representing plant segmentation of 'image'
+    """
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     binary_hsv_image = threshold_hsv(hsv_image, hsv_min, hsv_max, mask_hsv)
 
     binary_mean_shift_image = threshold_meanshift(
-        image, mean_image, threshold, mask_mean_shift)
+        image, mean_img, threshold, mask_mean_shift)
 
     result = cv2.add(binary_hsv_image, binary_mean_shift_image)
 
@@ -318,11 +390,27 @@ def mean_image(images):
 
 
 def color_tree(bgr, cabin=None, mask_pot=None, mask_rails=None, empty_img=None):
+    """
+    Segmentation using decision tree and mask
 
+    Platform specific method, masks and decision trees depend on imagery cabin
+    :param bgr: numpy.ndarray of integers
+        3-D array
+    :param cabin: string, 2 possible values : cabin-1 or cabin-2
+    :param mask_pot: mask_mean_shift: numpy.ndarray, optional
+        Array 2-D of same shape as `bgr` representing pot position on image
+    :param mask_rails: mask_mean_shift: numpy.ndarray, optional
+        Array 2-D of same shape as `bgr` representing rails position
+    :param empty_img: numpy.ndarray of integers
+        3-D array of empty cabin (without plant)
+    :return:
+        result : numpy.ndarray 2-D of same shape as `bgr`
+                 Binary image representing plant segmentation of 'bgr'
+    """
     if cabin == "cabin-1":
-        image_bin = color_threshold_tree_cabin_1(bgr)
+        image_bin = decision_tree_threshold_phenoarch_1(bgr)
     elif cabin == "cabin-2":
-        image_bin = color_threshold_tree_cabin_2(bgr)
+        image_bin = decision_tree_threshold_phenoarch_2(bgr)
     else:
         image_bin = numpy.zeros(bgr.shape[0:2], 'uint8')
 
@@ -345,8 +433,8 @@ def color_tree(bgr, cabin=None, mask_pot=None, mask_rails=None, empty_img=None):
         image_bin_threshold_pot = numpy.bitwise_and(image_bin, mask_extend)
 
         # Calculating diff between reference image and image with plant
-        image_bin_diff = meanshift_hsv(bgr, empty_img,
-                                     mask_hsv=numpy.zeros(bgr.shape[0: 2], 'uint8'))
+        image_bin_diff = mean_shift_hsv(bgr, empty_img,
+                                        mask_hsv=numpy.zeros(bgr.shape[0: 2], 'uint8'))
 
         # Out of the mask, keeping only pixels in both diff and threshold
         image_bin_diff = numpy.bitwise_and(
@@ -360,8 +448,19 @@ def color_tree(bgr, cabin=None, mask_pot=None, mask_rails=None, empty_img=None):
     return open(result, iterations=3)
 
 
-def color_threshold_tree_cabin_1(bgr):
+# TODO auto-generate these 2 functions from decisions trees description
+def decision_tree_threshold_phenoarch_1(bgr):
+    """
+    Implementation of a decision tree
 
+    Platform specific method, for top image in cabin 1 of Phenoarch
+    :param bgr: numpy.ndarray of integers
+        3-D array
+    :return:
+        result : numpy.ndarray 2-D of same shape as `bgr`
+                 Binary image representing True or False value of each pixel
+                 threw decision tree
+    """
     hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
     luv = cv2.cvtColor(bgr, cv2.COLOR_BGR2LUV)
     lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB)
@@ -601,7 +700,18 @@ def color_threshold_tree_cabin_1(bgr):
     return image_bin_seuil
 
 
-def color_threshold_tree_cabin_2(bgr):
+def decision_tree_threshold_phenoarch_2(bgr):
+    """
+    Implementation of a decision tree
+
+    Platform specific method, for top image in cabin 1 of Phenoarch
+    :param bgr: numpy.ndarray of integers
+        3-D array
+    :return:
+        result : numpy.ndarray 2-D of same shape as `bgr`
+                 Binary image representing True or False value of each pixel
+                 threw decision tree
+    """
     hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
     luv = cv2.cvtColor(bgr, cv2.COLOR_BGR2LUV)
     lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB)

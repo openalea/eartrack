@@ -44,76 +44,28 @@ Follow official website instruction to install miniconda :
 
 http://conda.pydata.org/miniconda.html
 
-On Linux / Ubuntu / MacOS
--------------------------
+User installation
+-----------------
 
-Create virtual environment and activate it
-..........................................
-
-.. code:: shell
-
-    conda create --name eartrack python
-    source activate eartrack
-
-Dependencies install
-....................
+Available for OS: osx_x64, win_x64 and linux_x64.
 
 .. code:: shell
 
-    conda install -c conda-forge numpy matplotlib opencv scikit-image
-    conda install -c openalea openalea.deploy openalea.core
-
-(Optional) Package managing tools :
-
-.. code:: shell
-
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
+    conda install -c conda-forge -c openalea openalea.eartrack
 
 
-Eartrack install
-................
+Source code installation
+------------------------
 
-.. code:: shell
+Please follow documentation installation page `<https://eartrack.readthedocs
+.io/en/latest/source/install/index.html>`_.
 
-    git clone https://github.com/openalea/eartrack.git
-    cd eartrack
-    python setup.py install --prefix=$CONDA_PREFIX
+Help and Support
+----------------
 
-On Windows
-----------
-
-Create virtual environment and activate it
-..........................................
-
-.. code:: shell
-
-    conda create --name eartrack python
-    activate eartrack
-
-Dependencies install
-....................
-
-.. code:: shell
-
-    conda install -c conda-forge numpy matplotlib scikit-image opencv pywin32
-    conda install -c openalea openalea.deploy openalea.core
-
-(Optional) Package managing tools :
-
-.. code:: shell
-
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
-
-
-Eartrack install
-................
-
-.. code:: shell
-
-    git clone https://github.com/openalea/eartrack.git
-    cd eartrack
-    python setup.py install --prefix=%CONDA_PREFIX%
-
+If you run into installation error, runtime error or something else, PLEASE,
+report to us in the "Issues" section, we'll try to resolve it as soon as
+possible.
 
 Authors
 -------

@@ -16,7 +16,9 @@
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1002155.svg
    :target: https://doi.org/10.5281/zenodo.1002155
 
-
+.. image:: https://anaconda.org/openalea/openalea.eartrack/badges/license.svg
+    :target: https://anaconda.org/openalea/openalea.eartrack
+    
 ========
 EarTrack
 ========

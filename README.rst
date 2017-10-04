@@ -10,6 +10,10 @@
     :target: https://ci.appveyor.com/project/artzet-s/eartrack-xo7du
     :alt: Appveyor build status (Windows x86 and x64)
 
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1002155.svg
+   :target: https://doi.org/10.5281/zenodo.1002155
+
+
 ========
 EarTrack
 ========

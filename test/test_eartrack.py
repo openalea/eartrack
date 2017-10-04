@@ -75,12 +75,13 @@ def test_eartrack():
 
     # ==========================================================================
 
-    imageFinale = images["side"][finales_positions[0, 2]].copy()
+    finale_img = images["side"][finales_positions[0, 2]].copy()
 
     if not (mean_pos == [-1, -1]).all():
-        imageFinale[mean_pos[0] - 20:mean_pos[0] + 21,
-        mean_pos[1] - 20:mean_pos[1] + 21, :] = (255, 0, 0)
+        pos = finales_positions[0, 0:2]
+        finale_img[pos[0] - 10:pos[0] + 11,
+                   pos[1] - 10:pos[1] + 11, :] = [0, 255, 255]
     elif finales_positions.shape[0] == 2:
         for pos in finales_positions:
-            imageFinale[pos[0] - 30:pos[0] + 31, pos[1] - 30:pos[1] + 31,
+            finale_img[pos[0] - 30:pos[0] + 31, pos[1] - 30:pos[1] + 31,
             :] = (255, 0, 0)

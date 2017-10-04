@@ -47,8 +47,7 @@ To create conda `environment <https://conda.io/docs/user-guide/tasks/manage-envi
 .. code:: shell 
     
     conda create -n eartrack python=2.7
-    source activate eartrack # on linux and osx
-    activate eartrack # on windows
+    source activate eartrack # just "activate eartrack" on windows
 
 User installation
 -----------------

@@ -6,8 +6,8 @@ eartrack
 .. autosummary::
     :toctree: generated/
 
-    top_analyse
-    side_analyse
+    top_analysis
+    side_analysis
     get_skeleton
     distance_transform
     binary_biggest_region

@@ -11,6 +11,16 @@ import openalea.eartrack.binarisation as bin
 
 
 def init(param_folder, input_folder, output_folder, log=False):
+    """ Initialisation for ear tracking on training images
+
+    :param param_folder: (str) path to configuration folder
+    :param input_folder: (str) path to images folder
+    :param output_folder: (str) path to output folder
+    :param log: (bool) whether to log or not analysis results in 'output_folder'
+    :return:
+        img_desc : (dict) containing images description useful for analysis
+        parameters : (dict) containing parameters useful for analysis
+    """
     files = os.listdir(input_folder)
 
     pattern = '^plant\-([0-9]*)\_task\-([0-9]*)\_(s|t)v([0-9]*)\_(cabin\-1|2)\.png$'
@@ -73,6 +83,15 @@ def init(param_folder, input_folder, output_folder, log=False):
 
 
 def read_images(img_desc, plant, task):
+    """ read a set of images from a descriptive dict
+
+    See 'init' function above for descriptive dictionary format
+    :param img_desc: (dict) containing images description
+    :param plant: (int) plant id
+    :param task: (int) imaging task id
+    :return:
+        images : (dict) containing all images describe in 'img_desc'
+    """
     images = dict({'top': dict(), 'side': dict()})
     for a in img_desc[plant][task]['top'].keys():
         images['top'][a] = cv2.imread(img_desc[plant][task]['top'][a],
@@ -84,6 +103,16 @@ def read_images(img_desc, plant, task):
 
 
 def binaries_calculation(images, cabin, param):
+    """ Perform binary calculation
+
+    :param images: (dict) containing images to binarise
+    :param cabin: (int) imaging cabin id (phenoarch platform specific)
+    :param param: (dict) containing parameters useful for analysis
+    :return:
+        binaries : (dict) containing binaries images
+        mask_top_center : (numpy.ndarray) 2-D image used for ear tracking top
+            image analysis
+    """
     binaries = dict({'top': dict(), 'side': dict()})
     for a in images['top'].keys():
         binaries['top'][a] = bin.color_tree(images['top'][a],
@@ -100,12 +129,12 @@ def binaries_calculation(images, cabin, param):
     mean_image = bin.mean_image([images['side'][angle] for angle in
                                  images['side'].keys()])
     for a in images['side'].keys():
-        binaries['side'][a] = bin.meanshift_hsv(images['side'][a],
-                                                mean_image,
-                                                threshold=param[cabin]["side"]["meanshift_threshold"],
-                                                hsv_min=param[cabin]["side"]["hsv_threshold_min"],
-                                                hsv_max=param[cabin]["side"]["hsv_threshold_max"],
-                                                mask_mean_shift=param[cabin]["side"]["mask_mean_shift"],
-                                                mask_hsv=param[cabin]["side"]["mask_hsv"])
+        binaries['side'][a] = bin.mean_shift_hsv(images['side'][a],
+                                                 mean_image,
+                                                 threshold=param[cabin]["side"]["meanshift_threshold"],
+                                                 hsv_min=param[cabin]["side"]["hsv_threshold_min"],
+                                                 hsv_max=param[cabin]["side"]["hsv_threshold_max"],
+                                                 mask_mean_shift=param[cabin]["side"]["mask_mean_shift"],
+                                                 mask_hsv=param[cabin]["side"]["mask_hsv"])
 
     return binaries, mask_top_center

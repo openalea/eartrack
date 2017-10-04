@@ -12,7 +12,8 @@ binarisation
     erode_dilate
     threshold_hsv
     threshold_meanshift
-    meanshift_hsv
+    mean_shift_hsv
     mean_image
     color_tree
-    color_threshold_tree_cabin_1
+    decision_tree_threshold_phenoarch_1
+    decision_tree_threshold_phenoarch_2

@@ -1,6 +1,6 @@
-===========================
-Installation with Miniconda
-===========================
+=======================================
+Source code installation with Miniconda
+=======================================
 
 Miniconda installation
 ----------------------
@@ -32,7 +32,7 @@ Dependencies install
 
 .. code:: shell
 
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
+    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme
 
 
 Eartrack install
@@ -40,7 +40,10 @@ Eartrack install
 
 .. code:: shell
 
-    conda install -c openalea openalea.eartrack
+    git clone https://github.com/openalea/eartrack.git
+    cd eartrack
+    python setup.py install --prefix=$CONDA_PREFIX
+
 
 On Windows
 ----------
@@ -65,7 +68,7 @@ Dependencies install
 
 .. code:: shell
 
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
+    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme
 
 
 Eartrack install
@@ -73,4 +76,6 @@ Eartrack install
 
 .. code:: shell
 
-    conda install -c openalea openalea.eartrack
+    git clone https://github.com/openalea/eartrack.git
+    cd eartrack
+    python setup.py install --prefix=%CONDA_PREFIX%

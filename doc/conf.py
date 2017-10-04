@@ -42,6 +42,9 @@ MOCK_MODULES = ['numpy',
                 'opencv',
                 'cv2',
                 'matplotlib',
+                'matplotlib.figure',
+                'matplotlib.backends',
+                'matplotlib.backends.backend_agg',
                 'skimage',
                 'skimage.morphology']
 

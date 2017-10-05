@@ -21,6 +21,7 @@ requirements:
     - python
     - setuptools
     - openalea.deploy
+    - pywin32 [win]
 
   run:
     - python
@@ -31,6 +32,7 @@ requirements:
     - matplotlib
     - opencv
     - scikit-image
+    - pywin32 [win]
 
 test:
   imports:
@@ -52,4 +54,4 @@ extra:
   recipe-maintainers:
     - pradal
     - brichet
-    - artzet
+    - artzet-s

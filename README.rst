@@ -9,7 +9,16 @@
 .. image:: https://ci.appveyor.com/api/projects/status/bpbmurhqv10pcy0j/branch/master?svg=true
     :target: https://ci.appveyor.com/project/artzet-s/eartrack-xo7du
     :alt: Appveyor build status (Windows x86 and x64)
+    
+.. image:: https://anaconda.org/openalea/openalea.eartrack/badges/version.svg   
+    :target: https://anaconda.org/openalea/openalea.eartrack
 
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1002155.svg
+   :target: https://doi.org/10.5281/zenodo.1002155
+
+.. image:: https://anaconda.org/openalea/openalea.eartrack/badges/license.svg
+    :target: https://anaconda.org/openalea/openalea.eartrack
+    
 ========
 EarTrack
 ========
@@ -37,80 +46,36 @@ Installation with Miniconda
 Miniconda installation
 ----------------------
 
-Follow official website instruction to install miniconda :
+Follow official website instruction to install miniconda : http://conda.pydata.org/miniconda.html
 
-http://conda.pydata.org/miniconda.html
+To create conda `environment <https://conda.io/docs/user-guide/tasks/manage-environments.html>`_  and activate it :
 
-On Linux / Ubuntu / MacOS
--------------------------
+.. code:: shell 
+    
+    conda create -n eartrack python=2.7
+    source activate eartrack # just "activate eartrack" on windows
 
-Create virtual environment and activate it
-..........................................
+User installation
+-----------------
 
-.. code:: shell
-
-    conda create --name eartrack python
-    source activate eartrack
-
-Dependencies install
-....................
+Available for linux, Windows and Mac OSX on 64 bits.
 
 .. code:: shell
 
-    conda install -c conda-forge numpy matplotlib opencv scikit-image
-    conda install -c openalea openalea.deploy openalea.core
-
-(Optional) Package managing tools :
-
-.. code:: shell
-
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
+    conda install -c conda-forge -c openalea openalea.eartrack
 
 
-Eartrack install
-................
+Source code installation
+------------------------
 
-.. code:: shell
+Please follow documentation installation page `<https://eartrack.readthedocs
+.io/en/latest/source/install/index.html>`_.
 
-    git clone https://github.com/openalea/eartrack.git
-    cd eartrack
-    python setup.py install --prefix=$CONDA_PREFIX
+Help and Support
+----------------
 
-On Windows
-----------
-
-Create virtual environment and activate it
-..........................................
-
-.. code:: shell
-
-    conda create --name eartrack python
-    activate eartrack
-
-Dependencies install
-....................
-
-.. code:: shell
-
-    conda install -c conda-forge numpy matplotlib scikit-image opencv pywin32
-    conda install -c openalea openalea.deploy openalea.core
-
-(Optional) Package managing tools :
-
-.. code:: shell
-
-    conda install -c conda-forge notebook nose sphinx sphinx_rtd_theme pandoc
-
-
-Eartrack install
-................
-
-.. code:: shell
-
-    git clone https://github.com/openalea/eartrack.git
-    cd eartrack
-    python setup.py install --prefix=%CONDA_PREFIX%
-
+Please open an **Issue** if you need support or that you run into any error (Installation, Runtime, etc.). 
+We'll try to resolve it as soon as possible.
 
 Authors
 -------

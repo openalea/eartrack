@@ -40,7 +40,7 @@ Tutorials are available as Jupyter notebook :
 
 * `Getting started with eartrack <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/ear_tracking_tutorial.ipynb>`_ 
 
-* `Eartrack step by step <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/ear_tracking_tutorial.ipynb>`_
+* `Eartrack step by step <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/detailed_ear_tracking_tutorial.ipynb>`_
 
 ===========================
 Installation with Miniconda

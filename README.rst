@@ -36,8 +36,11 @@ Documentation
 
 The documentation is available at `<https://eartrack.readthedocs.io>`_
 
-A `Tutorial <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/ear_tracking_tutorial.ipynb>`_ is available as a Jupyter Notebook.
-A `Step by step tutorial <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/detailed_ear_tracking_tutorial.ipynb>`_ is available as a Jupyter Notebook.
+Tutorials are available as Jupyter notebook :
+
+* `Getting started with eartrack <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/ear_tracking_tutorial.ipynb>`_ 
+
+* `Eartrack step by step <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/ear_tracking_tutorial.ipynb>`_
 
 ===========================
 Installation with Miniconda

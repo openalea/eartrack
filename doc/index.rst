@@ -18,13 +18,9 @@ Installation
 Notebooks Tutorial
 ------------------
 
-* `Ear Tracking tutorial`_
+* `Getting started with eartrack <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/getting_started_with_eartrack.ipynb>`_
 
-.. _Ear Tracking tutorial: http://nbviewer.jupyter.org/github/openalea/eartrack/blob/master/example/ear_tracking_tutorial.ipynb
-
-* `Ear Tracking step by step tutorial`_
-
-.. _Ear Tracking step by step tutorial: http://nbviewer.jupyter.org/github/openalea/eartrack/blob/master/example/detailed_ear_tracking_tutorial.ipynb
+* `Eartrack step by step <http://nbviewer.ipython.org/urls/raw.github.com/openalea/eartrack/master/example/eartrack_step_by_step.ipynb>`_
 
 .. toctree::
     :hidden:

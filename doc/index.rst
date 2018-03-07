@@ -56,7 +56,9 @@ License
 Citation
 --------
 
-Brichet N, Fournier C, Turc O, Strauss O, Artzet S, Pradal C, Welcker C, Tardieu F, Cabrera-Bosquet L. 2017. A robot-assisted imaging pipeline for tracking the growths of maize ear and silks in a high-throughput phenotyping platform. Plant Methods 13:96 doi:10.1186/s13007-017-0246-7
+Brichet N, Fournier C, Turc O, Strauss O, Artzet S, Pradal C, Welcker C, Tardieu F, Cabrera-Bosquet L. 2017.
+A robot-assisted imaging pipeline for tracking the growths of maize ear and silks in a high-throughput phenotyping platform.
+Plant Methods 13:96 `doi:10.1186/s13007-017-0246-7 <https://doi.org/10.1186/s13007-017-0246-7>`_
 
 Indices and tables
 ==================

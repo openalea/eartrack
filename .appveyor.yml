@@ -53,8 +53,7 @@ install:
   - "conda info -a"
   - "conda create -q -n test-environment python"
   - "activate test-environment"
-  - "conda install -c conda-forge numpy matplotlib opencv scikit-image pywin32"
-  - "conda install -c openalea openalea.deploy openalea.core"
+  - "conda install -c openalea -c conda-forge openalea.deploy openalea.core numpy matplotlib opencv scikit-image pywin32"
   - "python setup.py install"
 
 #  # Install the build and runtime dependencies of the project.

@@ -44,6 +44,10 @@ Authors
     ./source/authors.rst
 
 .. include:: ../AUTHORS.rst
+* Nicolas Brichet <nicolas.brichet@inra.fr>
+* Christian Fournier <christian.fournier@inra.fr>
+* Simon Artzet <simon.artzet@gmail.com>
+* Christophe Pradal <christophe.pradal@inria.fr>
 
 License
 -------
@@ -52,6 +56,13 @@ License
     :hidden:
 
     ./source/license.rst
+
+Citation
+--------
+
+Brichet N, Fournier C, Turc O, Strauss O, Artzet S, Pradal C, Welcker C, Tardieu F, Cabrera-Bosquet L. 2017.
+A robot-assisted imaging pipeline for tracking the growths of maize ear and silks in a high-throughput phenotyping platform.
+Plant Methods 13:96 `doi:10.1186/s13007-017-0246-7 <https://doi.org/10.1186/s13007-017-0246-7>`_
 
 Indices and tables
 ==================

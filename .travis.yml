@@ -36,7 +36,7 @@ install:
   - conda create -q -n test-environment python=$PYTHON_VERSION
   - source activate test-environment
   # Install dependencies
-  - conda install -c conda-forge numpy matplotlib opencv scikit-image
+  - conda install numpy matplotlib opencv scikit-image
   - conda install -c openalea openalea.deploy openalea.core
   # Install current package (no need --prefix=$CONDA_PREFIX with openalea.deploy)
   - python setup.py install
